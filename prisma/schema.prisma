@@ -1,0 +1,856 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ContentStatus {
+  DRAFT          @map("draft")
+  NEEDS_REVIEW   @map("needs_review")
+  NEEDS_REVISION @map("needs_revision")
+  APPROVED       @map("approved")
+  SCHEDULED      @map("scheduled")
+  POSTED         @map("posted")
+  MEASURED       @map("measured")
+  SKIPPED        @map("skipped")
+  ARCHIVED       @map("archived")
+}
+
+enum ApprovalType {
+  COPY         @map("copy")
+  IMAGE_PROMPT @map("image_prompt")
+  IMAGE_ASSET  @map("image_asset")
+  FULL_POST    @map("full_post")
+}
+
+enum ApprovalWorkflowStatus {
+  PENDING        @map("pending")
+  APPROVED       @map("approved")
+  NEEDS_REVISION @map("needs_revision")
+  REJECTED       @map("rejected")
+}
+
+enum ImageType {
+  QUOTE_CARD                 @map("quote_card")
+  CAROUSEL                   @map("carousel")
+  CHECKLIST                  @map("checklist")
+  DIAGRAM                    @map("diagram")
+  DATA_STYLE_GRAPHIC         @map("data_style_graphic")
+  SCREENSHOT_MOCKUP          @map("screenshot_mockup")
+  FOUNDER_NOTE               @map("founder_note")
+  WORKSHOP_PROMO             @map("workshop_promo")
+  BEFORE_AFTER               @map("before_after")
+  FIELD_NOTE                 @map("field_note")
+  ALBUM_STORY_VISUAL         @map("album_story_visual")
+  JOBSITE_BEFORE_AFTER       @map("jobsite_before_after")
+  GOOGLE_BUSINESS_PHOTO_POST @map("google_business_photo_post")
+  TEXT_ONLY_NO_IMAGE_NEEDED  @map("text_only_no_image_needed")
+}
+
+enum AutomationType {
+  RUN_TODAY             @map("run_today")
+  DAILY_CONTENT_PACK    @map("daily_content_pack")
+  IMAGE_PROMPT_BATCH    @map("image_prompt_batch")
+  WEEKLY_RESEARCH_BRIEF @map("weekly_research_brief")
+  WEEKLY_SOCIAL_ANALYSIS @map("weekly_social_analysis")
+  PERFORMANCE_CONTEXT_REFRESH @map("performance_context_refresh")
+  REPURPOSE_WINNING_POST @map("repurpose_winning_post")
+  CAMPAIGN_PLAN         @map("campaign_plan")
+  MONTHLY_CONTENT_MAP   @map("monthly_content_map")
+  SITE_AUDIT_TO_CONTENT @map("site_audit_to_content")
+  METRICS_ANALYSIS      @map("metrics_analysis")
+  CAPTION_REWRITE       @map("caption_rewrite")
+  APPROVAL_SUMMARY      @map("approval_summary")
+  PROMPT_TEST_RUN       @map("prompt_test_run")
+  APPROVAL_EXPORT       @map("approval_export")
+  ASSET_MANIFEST_EXPORT @map("asset_manifest_export")
+}
+
+enum AutomationStatus {
+  QUEUED    @map("queued")
+  RUNNING   @map("running")
+  SUCCEEDED @map("succeeded")
+  FAILED    @map("failed")
+}
+
+enum AutomationRecipeTriggerType {
+  MANUAL          @map("manual")
+  SCHEDULED       @map("scheduled")
+  EVENT           @map("event")
+  WEBHOOK         @map("webhook")
+  IMPORT_COMPLETE @map("import_complete")
+}
+
+enum SocialImportMethod {
+  CSV_UPLOAD   @map("csv_upload")
+  XLSX_UPLOAD  @map("xlsx_upload")
+  PASTED_TABLE @map("pasted_table")
+  MANUAL_ENTRY @map("manual_entry")
+  API_IMPORT   @map("api_import")
+  JSON_UPLOAD  @map("json_upload")
+}
+
+enum SocialImportStatus {
+  UPLOADED           @map("uploaded")
+  PARSED             @map("parsed")
+  NEEDS_MAPPING      @map("needs_mapping")
+  READY_TO_IMPORT    @map("ready_to_import")
+  IMPORTED           @map("imported")
+  PARTIALLY_IMPORTED @map("partially_imported")
+  FAILED             @map("failed")
+  ARCHIVED           @map("archived")
+}
+
+enum SocialRowValidationStatus {
+  VALID     @map("valid")
+  WARNING   @map("warning")
+  INVALID   @map("invalid")
+  DUPLICATE @map("duplicate")
+  IGNORED   @map("ignored")
+}
+
+enum SocialPostStatus {
+  IMPORTED           @map("imported")
+  MATCHED            @map("matched")
+  MANUALLY_CREATED   @map("manually_created")
+  GENERATED_FROM_APP @map("generated_from_app")
+  POSTED             @map("posted")
+  ARCHIVED           @map("archived")
+}
+
+enum SocialInsightType {
+  WINNING_POST              @map("winning_post")
+  WEAK_POST                 @map("weak_post")
+  WINNING_PLATFORM          @map("winning_platform")
+  WEAK_PLATFORM             @map("weak_platform")
+  WINNING_PILLAR            @map("winning_pillar")
+  WEAK_PILLAR               @map("weak_pillar")
+  WINNING_HOOK              @map("winning_hook")
+  WEAK_HOOK                 @map("weak_hook")
+  WINNING_CTA               @map("winning_cta")
+  WEAK_CTA                  @map("weak_cta")
+  WINNING_IMAGE_TYPE        @map("winning_image_type")
+  WEAK_IMAGE_TYPE           @map("weak_image_type")
+  POSTING_TIME_PATTERN      @map("posting_time_pattern")
+  AUDIENCE_RESPONSE_PATTERN @map("audience_response_pattern")
+  CONVERSION_PATTERN        @map("conversion_pattern")
+  REPURPOSE_OPPORTUNITY     @map("repurpose_opportunity")
+  STOP_DOING                @map("stop_doing")
+  TEST_NEXT                 @map("test_next")
+  CONTENT_GAP               @map("content_gap")
+}
+
+enum SocialInsightStatus {
+  NEW         @map("new")
+  REVIEWED    @map("reviewed")
+  ACCEPTED    @map("accepted")
+  DISMISSED   @map("dismissed")
+  IMPLEMENTED @map("implemented")
+}
+
+enum SocialImportIssueType {
+  MISSING_REQUIRED_FIELD @map("missing_required_field")
+  INVALID_DATE           @map("invalid_date")
+  INVALID_NUMBER         @map("invalid_number")
+  DUPLICATE_ROW          @map("duplicate_row")
+  UNMATCHED_POST         @map("unmatched_post")
+  UNKNOWN_PLATFORM       @map("unknown_platform")
+  UNKNOWN_BRAND          @map("unknown_brand")
+  UNSUPPORTED_FILE_TYPE  @map("unsupported_file_type")
+  MAPPING_ERROR          @map("mapping_error")
+  PARSE_ERROR            @map("parse_error")
+}
+
+enum SocialImportIssueSeverity {
+  INFO    @map("info")
+  WARNING @map("warning")
+  ERROR   @map("error")
+}
+
+model Brand {
+  id               String          @id @default(cuid())
+  name             String
+  slug             String          @unique
+  description      String?
+  positioning      String
+  audience         String
+  offerSummary     String
+  voiceGuidelines  String
+  forbiddenPhrases Json?
+  visualStyle      String
+  primaryColor     String?
+  secondaryColor   String?
+  accentColor      String?
+  logoUrl          String?
+  websiteUrl       String?
+  defaultCTA       String?
+  active           Boolean         @default(true)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  socialProfiles   SocialProfile[]
+  campaigns        Campaign[]
+  contentPillars   ContentPillar[]
+  postDrafts       PostDraft[]
+  imagePrompts     ImagePrompt[]
+  creativeAssets   CreativeAsset[]
+  approvals        Approval[]
+  socialMetrics    SocialMetric[]
+  socialAccounts   SocialAccount[]
+  dashboardImports SocialDashboardImport[]
+  socialPosts      SocialPost[]
+  metricSnapshots  SocialMetricSnapshot[]
+  dailyRollups     SocialMetricDailyRollup[]
+  performanceInsights SocialPerformanceInsight[]
+  socialBenchmarks SocialBenchmark[]
+}
+
+model SocialProfile {
+  id          String   @id @default(cuid())
+  brandId     String
+  platform    String
+  handle      String?
+  profileUrl  String
+  composerUrl String?
+  adminUrl    String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  brand       Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+
+  @@unique([brandId, platform])
+}
+
+model Platform {
+  id               String          @id @default(cuid())
+  name             String
+  slug             String          @unique
+  characterLimit   Int?
+  supportsHashtags Boolean         @default(false)
+  supportsAltText  Boolean         @default(false)
+  supportsCarousel Boolean         @default(false)
+  supportsVideo    Boolean         @default(false)
+  bestUseCase      String
+  active           Boolean         @default(true)
+  postDrafts       PostDraft[]
+  imagePrompts     ImagePrompt[]
+  creativeAssets   CreativeAsset[]
+  socialMetrics    SocialMetric[]
+  socialAccounts   SocialAccount[]
+  dashboardImports SocialDashboardImport[]
+  mappingTemplates SocialMetricMappingTemplate[]
+  socialPosts      SocialPost[]
+  metricSnapshots  SocialMetricSnapshot[]
+  dailyRollups     SocialMetricDailyRollup[]
+  performanceInsights SocialPerformanceInsight[]
+  socialBenchmarks SocialBenchmark[]
+}
+
+model ContentPillar {
+  id          String      @id @default(cuid())
+  brandId     String
+  name        String
+  slug        String
+  description String
+  examples    Json?
+  active      Boolean     @default(true)
+  brand       Brand       @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  postDrafts  PostDraft[]
+  socialPosts SocialPost[]
+  dailyRollups SocialMetricDailyRollup[]
+  performanceInsights SocialPerformanceInsight[]
+
+  @@unique([brandId, slug])
+}
+
+model Campaign {
+  id         String      @id @default(cuid())
+  brandId    String
+  name       String
+  slug       String
+  objective  String
+  startDate  DateTime?
+  endDate    DateTime?
+  status     ContentStatus @default(DRAFT)
+  offer      String?
+  primaryCTA String?
+  notes      String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  brand      Brand       @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  postDrafts PostDraft[]
+  socialPosts SocialPost[]
+  dailyRollups SocialMetricDailyRollup[]
+  performanceInsights SocialPerformanceInsight[]
+
+  @@unique([brandId, slug])
+}
+
+model ContentTheme {
+  id                String   @id @default(cuid())
+  title             String
+  description       String
+  angle             String?
+  source            String?
+  priority          Int      @default(3)
+  recommendedBrands Json?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model ContentPack {
+  id              String          @id @default(cuid())
+  date            DateTime
+  title           String
+  dailyTheme      String
+  strategicReason String
+  selectedBrands  Json
+  status          ContentStatus   @default(DRAFT)
+  generatedBy     String?
+  modelUsed       String?
+  promptKey       String?
+  promptVersion   String?
+  promptInputHash String?
+  notes           String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  postDrafts      PostDraft[]
+  approvals       Approval[]
+  socialPosts     SocialPost[]
+}
+
+model PostDraft {
+  id                String        @id @default(cuid())
+  contentPackId     String
+  brandId           String
+  campaignId        String?
+  platformId        String
+  contentPillarId   String
+  date              DateTime
+  postObjective     String
+  hook              String
+  body              String
+  ctaSoft           String?
+  ctaDirect         String?
+  hashtags          String?
+  communityTags     String?
+  firstComment      String?
+  replySeeds        Json?
+  redditDisclosure  String?
+  newsletterSubject String?
+  altText           String?
+  status            ContentStatus @default(NEEDS_REVIEW)
+  reviewerNotes     String?
+  finalCopy         String?
+  scheduledDate     DateTime?
+  postedUrl         String?
+  promptKey         String?
+  promptVersion     String?
+  promptInputHash   String?
+  modelUsed         String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  contentPack       ContentPack   @relation(fields: [contentPackId], references: [id], onDelete: Cascade)
+  brand             Brand         @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  campaign          Campaign?     @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  platform          Platform      @relation(fields: [platformId], references: [id], onDelete: Restrict)
+  contentPillar     ContentPillar @relation(fields: [contentPillarId], references: [id], onDelete: Restrict)
+  imagePrompts      ImagePrompt[]
+  creativeAssets    CreativeAsset[]
+  approvals         Approval[]
+  socialMetrics     SocialMetric[]
+  importedRows      SocialImportedRow[]
+  socialPosts       SocialPost[]
+  metricSnapshots   SocialMetricSnapshot[]
+
+  @@index([date, status])
+  @@index([brandId, platformId])
+}
+
+model ImagePrompt {
+  id                String        @id @default(cuid())
+  postDraftId       String
+  brandId           String
+  platformId        String
+  imageType         ImageType
+  headlineText      String?
+  supportingText    String?
+  prompt            String
+  negativePrompt    String?
+  layoutNotes       String?
+  canvaNotes        String?
+  adobeExpressNotes String?
+  photoshopNotes    String?
+  altText           String?
+  aspectRatio       String?
+  filename          String
+  status            ContentStatus @default(NEEDS_REVIEW)
+  promptKey         String?
+  promptVersion     String?
+  promptInputHash   String?
+  modelUsed         String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  postDraft         PostDraft     @relation(fields: [postDraftId], references: [id], onDelete: Cascade)
+  brand             Brand         @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  platform          Platform      @relation(fields: [platformId], references: [id], onDelete: Restrict)
+  creativeAssets    CreativeAsset[]
+  approvals         Approval[]
+
+  @@unique([filename])
+}
+
+model CreativeAsset {
+  id            String        @id @default(cuid())
+  imagePromptId String
+  postDraftId   String?
+  brandId       String
+  platformId    String
+  filename      String
+  fileUrl       String?
+  storagePath   String?
+  mimeType      String?
+  width         Int?
+  height        Int?
+  aspectRatio   String?
+  status        ContentStatus @default(DRAFT)
+  version       Int           @default(1)
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  imagePrompt   ImagePrompt   @relation(fields: [imagePromptId], references: [id], onDelete: Cascade)
+  postDraft     PostDraft?    @relation(fields: [postDraftId], references: [id], onDelete: SetNull)
+  brand         Brand         @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  platform      Platform      @relation(fields: [platformId], references: [id], onDelete: Restrict)
+  approvals     Approval[]
+
+  @@unique([filename])
+}
+
+model Approval {
+  id              String                 @id @default(cuid())
+  contentPackId   String?
+  postDraftId     String?
+  imagePromptId   String?
+  creativeAssetId String?
+  brandId         String?
+  type            ApprovalType
+  status          ApprovalWorkflowStatus @default(PENDING)
+  reviewer        String?
+  notes           String?
+  approvedAt      DateTime?
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  contentPack     ContentPack?           @relation(fields: [contentPackId], references: [id], onDelete: Cascade)
+  postDraft       PostDraft?             @relation(fields: [postDraftId], references: [id], onDelete: Cascade)
+  imagePrompt     ImagePrompt?           @relation(fields: [imagePromptId], references: [id], onDelete: Cascade)
+  creativeAsset   CreativeAsset?         @relation(fields: [creativeAssetId], references: [id], onDelete: Cascade)
+  brand           Brand?                 @relation(fields: [brandId], references: [id], onDelete: SetNull)
+}
+
+model SocialMetric {
+  id                    String    @id @default(cuid())
+  postDraftId           String
+  brandId               String
+  platformId            String
+  date                  DateTime
+  reach                 Int       @default(0)
+  impressions           Int       @default(0)
+  likes                 Int       @default(0)
+  comments              Int       @default(0)
+  shares                Int       @default(0)
+  saves                 Int       @default(0)
+  clicks                Int       @default(0)
+  profileVisits         Int       @default(0)
+  dms                   Int       @default(0)
+  formSubmissions       Int       @default(0)
+  leads                 Int       @default(0)
+  bookedCalls           Int       @default(0)
+  workshopRegistrations Int       @default(0)
+  quoteRequests         Int       @default(0)
+  kofiSupport           Int       @default(0)
+  notes                 String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  postDraft             PostDraft @relation(fields: [postDraftId], references: [id], onDelete: Cascade)
+  brand                 Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  platform              Platform  @relation(fields: [platformId], references: [id], onDelete: Restrict)
+}
+
+model SocialAccount {
+  id                String                  @id @default(cuid())
+  brandId           String
+  platformId        String
+  accountName       String
+  handle            String?
+  accountUrl        String?
+  externalAccountId String?
+  dashboardSource   String?
+  timezone          String                  @default("America/New_York")
+  active            Boolean                 @default(true)
+  notes             String?
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+  brand             Brand                   @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  platform          Platform                @relation(fields: [platformId], references: [id], onDelete: Restrict)
+  imports           SocialDashboardImport[]
+  socialPosts       SocialPost[]
+  metricSnapshots   SocialMetricSnapshot[]
+  dailyRollups      SocialMetricDailyRollup[]
+
+  @@unique([brandId, platformId, accountName])
+}
+
+model SocialDashboardImport {
+  id                     String                       @id @default(cuid())
+  sourceName             String
+  platformId             String?
+  brandId                String?
+  socialAccountId        String?
+  importedBy             String?
+  importMethod           SocialImportMethod
+  originalFilename       String?
+  originalFileUrl        String?
+  originalFileBytes      Bytes?
+  originalMimeType       String?
+  originalFileHash       String
+  rawColumnHeaders       Json
+  detectedPlatform       String?
+  detectedDateRangeStart DateTime?
+  detectedDateRangeEnd   DateTime?
+  rowCount               Int                          @default(0)
+  status                 SocialImportStatus           @default(UPLOADED)
+  errorSummary           String?
+  mappingTemplateId      String?
+  notes                  String?
+  createdAt              DateTime                     @default(now())
+  updatedAt              DateTime                     @updatedAt
+  platform               Platform?                    @relation(fields: [platformId], references: [id], onDelete: SetNull)
+  brand                  Brand?                       @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  socialAccount          SocialAccount?               @relation(fields: [socialAccountId], references: [id], onDelete: SetNull)
+  mappingTemplate        SocialMetricMappingTemplate? @relation(fields: [mappingTemplateId], references: [id], onDelete: SetNull)
+  rows                   SocialImportedRow[]
+  metricSnapshots        SocialMetricSnapshot[]
+  issues                 SocialImportIssue[]
+
+  @@unique([originalFileHash])
+}
+
+model SocialMetricMappingTemplate {
+  id              String                  @id @default(cuid())
+  name            String
+  platformId      String?
+  sourceName      String
+  description     String?
+  mappingJson     Json
+  requiredFields  Json
+  optionalFields  Json?
+  active          Boolean                 @default(true)
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+  platform        Platform?               @relation(fields: [platformId], references: [id], onDelete: SetNull)
+  imports         SocialDashboardImport[]
+
+  @@unique([name, sourceName])
+}
+
+model SocialImportedRow {
+  id                 String                    @id @default(cuid())
+  importId           String
+  rowIndex           Int
+  rawJson            Json
+  normalizedJson     Json?
+  validationStatus   SocialRowValidationStatus @default(VALID)
+  validationErrors   Json?
+  matchedPostDraftId String?
+  matchedSocialPostId String?
+  createdAt          DateTime                  @default(now())
+  updatedAt          DateTime                  @updatedAt
+  import             SocialDashboardImport     @relation(fields: [importId], references: [id], onDelete: Cascade)
+  matchedPostDraft   PostDraft?                @relation(fields: [matchedPostDraftId], references: [id], onDelete: SetNull)
+  matchedSocialPost  SocialPost?               @relation(fields: [matchedSocialPostId], references: [id], onDelete: SetNull)
+  issues             SocialImportIssue[]
+
+  @@unique([importId, rowIndex])
+}
+
+model SocialPost {
+  id                 String                    @id @default(cuid())
+  brandId            String
+  platformId         String
+  socialAccountId    String?
+  postDraftId        String?
+  contentPackId      String?
+  campaignId         String?
+  contentPillarId    String?
+  externalPostId     String?
+  postUrl            String?
+  postedAt           DateTime?
+  title              String?
+  hook               String?
+  bodyPreview        String?
+  fullCopy           String?
+  mediaType          String?
+  imageType          ImageType?
+  assetFilename      String?
+  ctaType            String?
+  postObjective      String?
+  contentFingerprint String
+  status             SocialPostStatus          @default(IMPORTED)
+  createdAt          DateTime                  @default(now())
+  updatedAt          DateTime                  @updatedAt
+  brand              Brand                     @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  platform           Platform                  @relation(fields: [platformId], references: [id], onDelete: Restrict)
+  socialAccount      SocialAccount?            @relation(fields: [socialAccountId], references: [id], onDelete: SetNull)
+  postDraft          PostDraft?                @relation(fields: [postDraftId], references: [id], onDelete: SetNull)
+  contentPack        ContentPack?              @relation(fields: [contentPackId], references: [id], onDelete: SetNull)
+  campaign           Campaign?                 @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  contentPillar      ContentPillar?            @relation(fields: [contentPillarId], references: [id], onDelete: SetNull)
+  importedRows       SocialImportedRow[]
+  metricSnapshots    SocialMetricSnapshot[]
+
+  @@unique([platformId, externalPostId])
+  @@index([brandId, platformId, postedAt])
+  @@index([contentFingerprint])
+}
+
+model SocialMetricSnapshot {
+  id                    String                 @id @default(cuid())
+  socialPostId          String?
+  postDraftId           String?
+  brandId               String
+  platformId            String
+  socialAccountId       String?
+  importId              String?
+  snapshotDate          DateTime
+  reportingStartDate    DateTime?
+  reportingEndDate      DateTime?
+  reach                 Int?
+  impressions           Int?
+  views                 Int?
+  videoViews            Int?
+  threeSecondViews      Int?
+  averageWatchTime      Float?
+  watchTimeSeconds      Int?
+  likes                 Int?
+  reactions             Int?
+  comments              Int?
+  shares                Int?
+  saves                 Int?
+  reposts               Int?
+  retweets              Int?
+  quotePosts            Int?
+  linkClicks            Int?
+  profileVisits         Int?
+  follows               Int?
+  unfollows             Int?
+  dms                   Int?
+  emailClicks           Int?
+  phoneClicks           Int?
+  directionClicks       Int?
+  websiteClicks         Int?
+  formSubmissions       Int?
+  leads                 Int?
+  quoteRequests         Int?
+  bookedCalls           Int?
+  workshopRegistrations Int?
+  purchases             Int?
+  revenue               Float?
+  kofiSupport           Float?
+  cost                  Float?
+  spend                 Float?
+  cpc                   Float?
+  cpm                   Float?
+  ctr                   Float?
+  engagementRate        Float?
+  conversionRate        Float?
+  rawMetricJson         Json?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  socialPost            SocialPost?            @relation(fields: [socialPostId], references: [id], onDelete: SetNull)
+  postDraft             PostDraft?             @relation(fields: [postDraftId], references: [id], onDelete: SetNull)
+  brand                 Brand                  @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  platform              Platform               @relation(fields: [platformId], references: [id], onDelete: Restrict)
+  socialAccount         SocialAccount?         @relation(fields: [socialAccountId], references: [id], onDelete: SetNull)
+  import                SocialDashboardImport? @relation(fields: [importId], references: [id], onDelete: SetNull)
+
+  @@index([brandId, platformId, snapshotDate])
+  @@index([socialPostId, snapshotDate])
+}
+
+model SocialMetricDailyRollup {
+  id                    String         @id @default(cuid())
+  date                  DateTime
+  brandId               String
+  platformId            String
+  socialAccountId       String?
+  campaignId            String?
+  contentPillarId       String?
+  postObjective         String?
+  imageType             ImageType?
+  totalPosts            Int            @default(0)
+  totalReach            Int            @default(0)
+  totalImpressions      Int            @default(0)
+  totalViews            Int            @default(0)
+  totalEngagements      Int            @default(0)
+  totalClicks           Int            @default(0)
+  totalLeads            Int            @default(0)
+  totalRevenue          Float          @default(0)
+  averageEngagementRate Float?
+  averageClickRate      Float?
+  averageConversionRate Float?
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  brand                 Brand          @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  platform              Platform       @relation(fields: [platformId], references: [id], onDelete: Restrict)
+  socialAccount         SocialAccount? @relation(fields: [socialAccountId], references: [id], onDelete: SetNull)
+  campaign              Campaign?      @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  contentPillar         ContentPillar? @relation(fields: [contentPillarId], references: [id], onDelete: SetNull)
+
+  @@index([date, brandId, platformId])
+}
+
+model SocialPerformanceInsight {
+  id              String              @id @default(cuid())
+  dateRangeStart  DateTime
+  dateRangeEnd    DateTime
+  brandId         String?
+  platformId      String?
+  campaignId      String?
+  contentPillarId String?
+  insightType     SocialInsightType
+  title           String
+  summary         String
+  evidenceJson    Json
+  recommendation  String
+  confidence      Float               @default(0.6)
+  priority        Int                 @default(3)
+  status          SocialInsightStatus @default(NEW)
+  promptKey       String?
+  promptVersion   String?
+  promptInputHash String?
+  modelUsed       String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  brand           Brand?              @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  platform        Platform?           @relation(fields: [platformId], references: [id], onDelete: SetNull)
+  campaign        Campaign?           @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  contentPillar   ContentPillar?      @relation(fields: [contentPillarId], references: [id], onDelete: SetNull)
+
+  @@index([dateRangeStart, dateRangeEnd, status])
+}
+
+model SocialBenchmark {
+  id                String   @id @default(cuid())
+  brandId           String
+  platformId        String
+  metricName        String
+  period            String
+  averageValue      Float
+  medianValue       Float?
+  topQuartileValue  Float?
+  bottomQuartileValue Float?
+  sampleSize        Int      @default(0)
+  dateRangeStart    DateTime
+  dateRangeEnd      DateTime
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  brand             Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  platform          Platform @relation(fields: [platformId], references: [id], onDelete: Restrict)
+
+  @@unique([brandId, platformId, metricName, period, dateRangeStart, dateRangeEnd])
+}
+
+model SocialImportIssue {
+  id           String                    @id @default(cuid())
+  importId     String
+  rowId        String?
+  issueType    SocialImportIssueType
+  severity     SocialImportIssueSeverity
+  message      String
+  suggestedFix String?
+  resolved     Boolean                   @default(false)
+  createdAt    DateTime                  @default(now())
+  import       SocialDashboardImport     @relation(fields: [importId], references: [id], onDelete: Cascade)
+  row          SocialImportedRow?        @relation(fields: [rowId], references: [id], onDelete: Cascade)
+
+  @@index([importId, severity])
+}
+
+model AutomationRun {
+  id              String               @id @default(cuid())
+  type            AutomationType
+  status          AutomationStatus
+  input           Json
+  output          Json?
+  error           String?
+  promptKey       String?
+  promptVersion   String?
+  promptInputHash String?
+  modelUsed       String?
+  recordsCreated  Json?
+  recipeRunId     String?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime             @default(now())
+  recipeRun       AutomationRecipeRun? @relation(fields: [recipeRunId], references: [id], onDelete: SetNull)
+}
+
+model AutomationRecipe {
+  id                 String                      @id @default(cuid())
+  name               String
+  slug               String                      @unique
+  description        String
+  triggerType        AutomationRecipeTriggerType @default(MANUAL)
+  active             Boolean                     @default(true)
+  stepsJson          Json
+  requiredInputsJson Json
+  optionalInputsJson Json?
+  defaultSettingsJson Json?
+  featureFlagsJson   Json?
+  createdAt          DateTime                    @default(now())
+  updatedAt          DateTime                    @updatedAt
+  runs               AutomationRecipeRun[]
+}
+
+model AutomationRecipeRun {
+  id                 String           @id @default(cuid())
+  recipeId           String
+  status             AutomationStatus
+  inputJson          Json
+  outputJson         Json?
+  error              String?
+  recordsCreatedJson Json?
+  startedAt          DateTime?
+  completedAt        DateTime?
+  createdAt          DateTime         @default(now())
+  recipe             AutomationRecipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  automationRuns     AutomationRun[]
+}
+
+model PromptTemplate {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  category  String
+  body      String
+  variables Json?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ResearchBrief {
+  id             String   @id @default(cuid())
+  weekStart      DateTime
+  title          String
+  source         String?
+  summary        String
+  audienceSignals Json?
+  postIdeas      Json?
+  visualConcepts Json?
+  rawText        String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}

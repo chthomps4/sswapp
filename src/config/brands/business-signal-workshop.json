@@ -1,0 +1,27 @@
+{
+  "name": "Business Signal Workshop",
+  "slug": "business-signal-workshop",
+  "positioning": "Business clarity, signal detection, and practical decision filters for people building serious work.",
+  "audience": "Founders, operators, consultants, and professionals who need clearer business signals.",
+  "offers": ["workshop", "decision frameworks", "content product", "strategy sessions", "signal brief"],
+  "voice": "Strategic, signal-focused, direct, diagnostic, insightful, practical.",
+  "visualStyle": "Authority-building frameworks, diagnostic checklists, restrained business graphics, clear contrast.",
+  "forbiddenPhrases": ["thought leader", "hustle harder", "secret formula", "viral", "dominate"],
+  "primaryPlatforms": ["linkedin", "x", "newsletter", "reddit"],
+  "postingFrequency": "4 authority posts weekly, 2 discussion prompts, 1 direct offer post during launch windows.",
+  "contentPillars": [
+    "signal-vs-noise",
+    "business-decision-filters",
+    "operator-psychology",
+    "practical-growth-frameworks",
+    "authority-and-trust",
+    "workshop-insights",
+    "business-pattern-recognition"
+  ],
+  "ctaOptions": ["Comment with the signal you are trying to interpret.", "Join the next workshop.", "Use this as a decision filter this week."],
+  "imageStyleRules": ["Favor matrices, checklists, decision trees, and sparse quote cards.", "Never use fake charts as evidence.", "Make the insight obvious in two seconds."],
+  "promptGuardrails": ["No generic business motivation.", "No fake vulnerability.", "Use one sharp observation and one practical takeaway."],
+  "sampleHooks": ["Most businesses do not have a growth problem. They have a signal problem.", "Noise demands action. Signal demands interpretation.", "Before you add a tactic, name the assumption it is supposed to fix."],
+  "samplePostFormats": ["decision filter", "signal vs noise contrast", "operator blind spot", "workshop insight"],
+  "filenamePrefix": "business-signal-workshop"
+}

@@ -1,0 +1,28 @@
+{
+  "name": "Signal Workshop",
+  "slug": "signal-workshop",
+  "positioning": "Good work deserves a better signal.",
+  "audience": "Small business owners, creators, consultants, contractors, and operators who need clearer web, content, and business systems.",
+  "offers": ["websites", "social media systems", "content operations", "business training", "simple automation"],
+  "voice": "Practical, clear, direct, useful, calm, human. Avoid agency bloat, guru language, hype, fake urgency, and generic AI phrasing.",
+  "visualStyle": "Clean internal-workshop feel, structured panels, useful diagrams, readable type, grounded color accents.",
+  "forbiddenPhrases": ["game changer", "crush it", "10x", "unlock your potential", "limited time only"],
+  "primaryPlatforms": ["linkedin", "facebook", "instagram", "newsletter"],
+  "postingFrequency": "3-5 useful posts per week, with daily draft capacity during active campaigns.",
+  "contentPillars": [
+    "simple-systems-that-work",
+    "website-clarity",
+    "social-media-without-agency-bloat",
+    "local-seo-and-google-business-profile",
+    "business-owner-training",
+    "transparent-pricing",
+    "client-project-breakdowns",
+    "good-work-better-signal"
+  ],
+  "ctaOptions": ["Choose one signal to act on this week.", "Ask for a simple systems review.", "Book a practical next-step call."],
+  "imageStyleRules": ["Use diagrams and checklists over decorative stock imagery.", "Keep mobile readability first.", "Show signal, decision, and next action."],
+  "promptGuardrails": ["No fake urgency.", "No identical platform copy.", "Every post needs one practical signal."],
+  "sampleHooks": ["Good work deserves a better signal.", "Most small business systems fail because they are built for someone else's business.", "The useful tool is the one you will actually keep using."],
+  "samplePostFormats": ["signal of the day", "simple system checklist", "client project breakdown", "before/after workflow"],
+  "filenamePrefix": "signal-workshop"
+}

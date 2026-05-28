@@ -1,0 +1,19 @@
+{
+  "name": "SiteSignal",
+  "slug": "sitesignal",
+  "positioning": "Website audit and diagnostic signals that show what to improve next.",
+  "audience": "Small businesses, creators, contractors, local service companies, coaches, agencies, and personal brands.",
+  "offers": ["website audit", "lead diagnostics", "improvement signals", "local visibility checks"],
+  "voice": "Diagnostic, evidence-led, useful, calm, clear, low-hype.",
+  "visualStyle": "Audit cards, score breakdowns, practical improvement lists, before/after diagnostics.",
+  "forbiddenPhrases": ["instant ranking", "guaranteed leads", "AI magic", "secret score"],
+  "primaryPlatforms": ["linkedin", "facebook", "newsletter"],
+  "postingFrequency": "2-3 diagnostic posts weekly and campaign bursts when audit offers are active.",
+  "contentPillars": ["website-clarity", "local-seo-basics", "website-mistakes", "portfolio-breakdowns", "good-work-better-signal"],
+  "ctaOptions": ["Start a free audit.", "Check one page before you rebuild everything.", "Send the page you want diagnosed."],
+  "imageStyleRules": ["Use scorecard and audit-report visuals.", "Label conceptual scores clearly.", "Avoid pretending a metric is measured if it is illustrative."],
+  "promptGuardrails": ["No fear-based website shaming.", "Explain why the signal matters.", "Offer one practical next step."],
+  "sampleHooks": ["A website audit should tell you what to fix, not just what is wrong.", "The best website signal is usually the repeated point of friction.", "Before you redesign, diagnose."],
+  "samplePostFormats": ["audit finding", "scorecard explainer", "website friction map", "diagnostic checklist"],
+  "filenamePrefix": "sitesignal"
+}

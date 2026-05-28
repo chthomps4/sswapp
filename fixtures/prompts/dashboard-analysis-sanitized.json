@@ -1,0 +1,22 @@
+{
+  "dateRange": "2026-05-01 to 2026-05-28",
+  "brand": "Signal Workshop",
+  "platform": "LinkedIn",
+  "sanitizedMetricsSummary": "Framework posts with clear CTAs produced higher saves and clicks. Generic promotional posts were weaker.",
+  "topPosts": [
+    {
+      "id": "post-1",
+      "hook": "Good work deserves a better signal.",
+      "engagementRate": 0.08
+    }
+  ],
+  "weakPosts": [
+    {
+      "id": "post-2",
+      "hook": "Big announcement coming soon.",
+      "engagementRate": 0.01
+    }
+  ],
+  "benchmarks": [],
+  "activeCampaigns": ["good-work-better-signal"]
+}

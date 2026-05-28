@@ -1,0 +1,28 @@
+{
+  "name": "AL Brothers LLC",
+  "slug": "al-brothers",
+  "positioning": "Reliable contractor support for punch lists, drywall, paint, finish work, remodeling, and exterior repairs in Greenville and Upstate SC.",
+  "audience": "Builders, homeowners, property managers, and local clients who need dependable finish and repair work.",
+  "offers": ["builder punch lists", "drywall repair", "paint", "finish work", "remodeling", "exterior repairs", "quote requests"],
+  "voice": "Reliable, local, practical, straightforward, proof-focused, builder-friendly, homeowner-friendly.",
+  "visualStyle": "Proof-of-work photos, before/after layouts, jobsite notes, clean service-area graphics.",
+  "forbiddenPhrases": ["cheap work", "we do it all", "best in town", "guaranteed cheapest"],
+  "primaryPlatforms": ["facebook", "google-business-profile", "instagram"],
+  "postingFrequency": "2-4 proof posts weekly plus Google Business Profile updates for completed work.",
+  "contentPillars": [
+    "before-after-work",
+    "punch-list-education",
+    "builder-closeout-support",
+    "drywall-paint-repair",
+    "remodel-trust-signals",
+    "service-area-posts",
+    "crew-reliability",
+    "jobsite-communication"
+  ],
+  "ctaOptions": ["Request a quote.", "Send the punch list.", "Ask about availability in Greenville or the Upstate."],
+  "imageStyleRules": ["Use real before/after or jobsite proof when available.", "Keep graphics straightforward.", "Lead with the work, not decoration."],
+  "promptGuardrails": ["Do not invent project details.", "Do not overpromise timelines.", "Keep claims practical and local."],
+  "sampleHooks": ["A good punch list closeout removes friction for the builder and the homeowner.", "Finish work is trust work.", "Small repairs can carry a lot of the client's first impression."],
+  "samplePostFormats": ["before/after", "punch list tip", "service area update", "builder closeout note"],
+  "filenamePrefix": "al-brothers"
+}

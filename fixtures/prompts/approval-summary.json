@@ -1,0 +1,24 @@
+{
+  "contentPack": {
+    "id": "pack-2026-05-28",
+    "dailyTheme": "Your online presence should not require a full-time employee to manage."
+  },
+  "posts": [
+    {
+      "id": "post-1",
+      "brandSlug": "signal-workshop",
+      "platformSlug": "linkedin",
+      "hook": "Your online presence should not require a full-time employee to manage.",
+      "status": "needs_review"
+    }
+  ],
+  "imagePrompts": [
+    {
+      "id": "image-1",
+      "postDraftId": "post-1",
+      "altText": "A simple systems map for online presence tasks."
+    }
+  ],
+  "brandContext": "Signal Workshop practical, clear, useful, non-hype voice.",
+  "knownRisks": ["generic language", "unsupported claims", "missing alt text"]
+}

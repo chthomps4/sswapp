@@ -1,0 +1,28 @@
+{
+  "name": "Local Signal Websites",
+  "slug": "local-signal-websites",
+  "positioning": "Custom websites for artists, creators, small businesses, and local brands without template lock-in.",
+  "audience": "Artists, creators, service businesses, local brands, and small teams that need a site they own.",
+  "offers": ["custom websites", "website packages", "local SEO", "Google Business Profile setup", "website audits"],
+  "voice": "Helpful, technical but approachable, small-business friendly, ownership-focused, simple, honest.",
+  "visualStyle": "Website screenshots, homepage audits, local search checklists, clean before/after structure.",
+  "forbiddenPhrases": ["just templates", "overnight success", "set it and forget it", "growth hack"],
+  "primaryPlatforms": ["facebook", "instagram", "google-business-profile", "linkedin"],
+  "postingFrequency": "3 posts weekly plus GBP updates for active local campaigns.",
+  "contentPillars": [
+    "fast-custom-websites",
+    "no-template-design",
+    "no-lock-in-ownership",
+    "local-seo-basics",
+    "portfolio-breakdowns",
+    "website-mistakes",
+    "artist-creator-sites",
+    "simple-packages"
+  ],
+  "ctaOptions": ["Run a free website audit.", "Ask what your homepage is missing.", "See the simple website packages."],
+  "imageStyleRules": ["Show website sections, audit marks, and local trust signals.", "Avoid generic laptop stock photos.", "Keep copy short enough for mobile."],
+  "promptGuardrails": ["Do not shame small businesses.", "Explain the practical fix.", "Tie local visibility to ownership and clarity."],
+  "sampleHooks": ["Your homepage has one job before it has a design job.", "A local website should answer four questions fast.", "No-template does not mean complicated."],
+  "samplePostFormats": ["homepage audit", "local SEO checklist", "portfolio breakdown", "website mistake to fix"],
+  "filenamePrefix": "local-signal-websites"
+}

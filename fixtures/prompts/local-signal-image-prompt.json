@@ -1,0 +1,21 @@
+{
+  "brand": {
+    "name": "Local Signal Websites",
+    "slug": "local-signal-websites",
+    "visualStyle": "Clean website screenshots, local business clarity, no-template positioning."
+  },
+  "platform": {
+    "name": "Instagram",
+    "slug": "instagram"
+  },
+  "post": {
+    "hook": "Your website should not need constant babysitting.",
+    "body": "Show the four homepage questions a local site should answer."
+  },
+  "contentPillar": "simple-packages",
+  "campaign": "no-template-websites",
+  "visualStyle": "Clean, readable, small-business friendly.",
+  "imageStyleRules": ["4:5", "one idea per slide", "readable on mobile"],
+  "forbiddenVisualElements": ["generic stock laptops", "fake dashboards"],
+  "assetFilenameFormat": "YYYY-MM-DD_brand_platform_contentpillar_campaign_v01.ext"
+}

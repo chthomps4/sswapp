@@ -1,0 +1,28 @@
+{
+  "name": "Parallax Hearts",
+  "slug": "parallax-hearts",
+  "positioning": "A cinematic music and story-world project from Vallen and What the Town Keeps.",
+  "audience": "Listeners, readers, supporters, and visual-novel fans drawn to story-rich, atmospheric work.",
+  "offers": ["songs", "story fragments", "visual novel", "field notes", "support memberships", "Ko-fi"],
+  "voice": "Cinematic, intimate, atmospheric, archive-like, emotionally grounded, rainy, mysterious but not fantasy or horror hype.",
+  "visualStyle": "Rainy town atmosphere, archive notes, soft cinematic stills, music fragments, field reports.",
+  "forbiddenPhrases": ["lore dump", "epic fantasy", "jump scare", "dark and twisted"],
+  "primaryPlatforms": ["instagram", "facebook", "kofi", "newsletter"],
+  "postingFrequency": "2-4 atmospheric posts weekly, with release-note bursts around songs and story drops.",
+  "contentPillars": [
+    "dispatches-from-vallen",
+    "song-notes",
+    "story-fragments",
+    "visual-novel-archive",
+    "field-notes",
+    "behind-the-scenes",
+    "support-membership",
+    "rainy-town-atmosphere"
+  ],
+  "ctaOptions": ["Read the next field note.", "Listen when the next release lands.", "Support the archive on Ko-fi."],
+  "imageStyleRules": ["Use atmosphere to clarify the story fragment.", "Avoid cluttered AI fantasy art.", "Keep text minimal and archive-like."],
+  "promptGuardrails": ["Do not over-explain the world.", "Keep mystery grounded in feeling.", "No generic band promotion language."],
+  "sampleHooks": ["The town keeps the things people cannot say out loud.", "Some songs arrive as weather first.", "Vallen writes like the rain is taking notes."],
+  "samplePostFormats": ["field note", "song note", "archive fragment", "support membership reminder"],
+  "filenamePrefix": "parallax-hearts"
+}

@@ -1,0 +1,21 @@
+Output rules:
+- Follow the requested schema exactly.
+- Return valid JSON when JSON is requested.
+- Do not wrap JSON in markdown fences unless explicitly requested.
+- Use empty strings or empty arrays for unavailable optional values.
+- Do not add commentary outside the requested structure.
+- All generated posts must include:
+  - brand
+  - platform
+  - content pillar
+  - objective
+  - hook
+  - body
+  - CTA
+  - image concept
+  - image prompt
+  - alt text
+  - approval notes
+  - status recommendation
+- Status should default to "needs_review".
+- Do not mark anything as approved automatically.

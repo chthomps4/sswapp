@@ -1,0 +1,12 @@
+{
+  "sourceItem": {
+    "id": "post-2026-05-28-linkedin-signal",
+    "hook": "Good work deserves a better signal.",
+    "body": "A useful post starts with a real signal."
+  },
+  "brand": "Signal Workshop",
+  "originalPlatform": "LinkedIn",
+  "targetPlatforms": ["Facebook", "Instagram", "Newsletter"],
+  "reason": "Strong practical framework and saveable idea.",
+  "recentPerformanceContext": "Sanitized: framework posts drove saves and clicks."
+}
