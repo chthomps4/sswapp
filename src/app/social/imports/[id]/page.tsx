@@ -1,9 +1,14 @@
 import { ContentPageShell } from "@/components/content-page-shell";
+import { getSocialImportPreview, isDatabaseConfigured } from "@/lib/db-operational";
 import { createSampleSocialImport } from "@/lib/social-dashboard-engine";
+
+export const dynamic = "force-dynamic";
 
 export default async function SocialImportDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const sample = createSampleSocialImport();
+  const dbImport = isDatabaseConfigured() ? await getSocialImportPreview(id).catch(() => null) : null;
+  const importRecord = dbImport || sample.import;
 
   return (
     <ContentPageShell
@@ -13,9 +18,9 @@ export default async function SocialImportDetailPage({ params }: { params: Promi
     >
       <section className="grid gap-4 lg:grid-cols-3">
         {[
-          ["Detected platform", sample.import.detectedPlatform],
-          ["Rows imported", sample.snapshots.length],
-          ["Issues", sample.issues.length],
+          ["Detected platform", importRecord.detectedPlatform],
+          ["Rows parsed", importRecord.previewRows.length],
+          ["Issues", importRecord.previewRows.reduce((sum, row) => sum + row.validationErrors.length, 0)],
         ].map(([label, value]) => (
           <div key={label} className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
             <p className="text-xs uppercase text-stone-500">{label}</p>

@@ -8,3 +8,10 @@ export function getPrisma() {
   }
   return globalForPrisma.prisma;
 }
+
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop, receiver) {
+    const client = getPrisma();
+    return Reflect.get(client, prop, receiver);
+  },
+});

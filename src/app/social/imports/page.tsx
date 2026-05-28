@@ -1,10 +1,23 @@
 import Link from "next/link";
 import { ContentPageShell } from "@/components/content-page-shell";
+import { isDatabaseConfigured, listSocialImports } from "@/lib/db-operational";
 import { createSampleSocialImport, mappingTemplates, socialAccounts } from "@/lib/social-dashboard-engine";
 
-export default function SocialImportsPage() {
-  const sample = createSampleSocialImport();
-  const imports = [sample.import];
+export const dynamic = "force-dynamic";
+
+export default async function SocialImportsPage() {
+  const dbImports = isDatabaseConfigured() ? await listSocialImports() : null;
+  const sample = dbImports ? null : createSampleSocialImport();
+  const imports =
+    dbImports?.map((item) => ({
+      id: item.id,
+      originalFilename: item.originalFilename || "",
+      detectedPlatform: item.detectedPlatform || item.platform?.slug || "",
+      rowCount: item.rowCount,
+      status: item.status.toLowerCase(),
+      detectedDateRangeStart: item.detectedDateRangeStart?.toISOString().slice(0, 10) || "",
+      detectedDateRangeEnd: item.detectedDateRangeEnd?.toISOString().slice(0, 10) || "",
+    })) || [sample!.import];
 
   return (
     <ContentPageShell
@@ -43,7 +56,7 @@ export default function SocialImportsPage() {
                   {item.detectedDateRangeStart} to {item.detectedDateRangeEnd}
                 </td>
                 <td className="px-4 py-3">
-                  <Link href="/social/imports/sample" className="text-[#1e6b4d] hover:underline">
+                  <Link href={`/social/imports/${item.id}`} className="text-[#1e6b4d] hover:underline">
                     View import
                   </Link>
                 </td>

@@ -30,6 +30,12 @@ Steps:
 
 All generated items remain `needs_review` or `pending`.
 
+Operational behavior:
+
+- With `DATABASE_URL`, Run Today persists records and returns `/packs/[contentPackId]`.
+- Without `DATABASE_URL`, Run Today returns deterministic fallback content and `/packs/run-today`.
+- With `OPENAI_API_KEY` disabled or missing, generation remains review-safe and local fallback is labeled in the automation metadata.
+
 ## Image Prompt Batch
 
 Recipe: `image-prompt-batch`
@@ -90,3 +96,5 @@ The workflow uses sanitized audit findings and creates public-safe educational c
 - If an AI action is blocked, check the relevant feature flag.
 - If exports are empty, confirm posts are approved; scheduler CSV exports approved posts only.
 - If analytics are sparse, import more dashboard CSV data and rerun weekly analysis.
+- If `/api/health` reports `databaseConfigured: false`, add Neon `DATABASE_URL` and `DIRECT_URL`, run `npx prisma migrate deploy`, then `npm run seed`.
+- If Vercel has deployment-level overrides from an older import, redeploy production without build cache after setting Framework Preset to Next.js and Output Directory to the Next.js default.

@@ -1,8 +1,23 @@
 import { ContentPageShell } from "@/components/content-page-shell";
 import { createSampleDailyContentPack } from "@/lib/automation-engine";
+import { isDatabaseConfigured, listCalendarDrafts } from "@/lib/db-operational";
 
-export default function CalendarPage() {
-  const pack = createSampleDailyContentPack();
+export const dynamic = "force-dynamic";
+
+export default async function CalendarPage() {
+  const dbDrafts = isDatabaseConfigured() ? await listCalendarDrafts() : null;
+  const pack = dbDrafts ? null : createSampleDailyContentPack();
+  const drafts =
+    dbDrafts?.map((draft) => ({
+      id: draft.id,
+      date: draft.date.toISOString().slice(0, 10),
+      brandName: draft.brand.name,
+      platformName: draft.platform.name,
+      contentPillarName: draft.contentPillar.name,
+      hook: draft.hook,
+      status: draft.status.toLowerCase(),
+    })) || pack?.postDrafts || [];
+
   return (
     <ContentPageShell eyebrow="Calendar" title="Content Calendar" description="List view of generated posts by date, brand, platform, pillar, and status.">
       <div className="overflow-x-auto rounded-lg border border-stone-200 bg-white shadow-sm">
@@ -18,7 +33,7 @@ export default function CalendarPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-stone-100">
-            {pack.postDrafts.map((draft) => (
+            {drafts.map((draft) => (
               <tr key={draft.id}>
                 <td className="px-4 py-3 font-mono text-xs">{draft.date}</td>
                 <td className="px-4 py-3">{draft.brandName}</td>

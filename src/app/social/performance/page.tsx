@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { ContentPageShell } from "@/components/content-page-shell";
-import { createSampleSocialImport, identifyTopPosts } from "@/lib/social-dashboard-engine";
+import { getSocialPerformanceData } from "@/lib/db-operational";
+import { identifyTopPosts } from "@/lib/social-dashboard-engine";
 
-export default function SocialPerformancePage() {
-  const sample = createSampleSocialImport();
+export const dynamic = "force-dynamic";
+
+export default async function SocialPerformancePage() {
+  const sample = await getSocialPerformanceData();
   const ranked = identifyTopPosts(sample.snapshots, sample.socialPosts);
   const totalReach = sample.snapshots.reduce((sum, metric) => sum + Number(metric.reach || 0), 0);
   const totalImpressions = sample.snapshots.reduce((sum, metric) => sum + Number(metric.impressions || 0), 0);

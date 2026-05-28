@@ -27,6 +27,15 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 OpenAI generation works when `OPENAI_API_KEY` is present. Without it, the daily pack generator returns a deterministic review-ready fallback so the app remains usable.
 
+To run the DB-first workflow locally or on Vercel:
+
+```powershell
+npx.cmd prisma migrate deploy
+npm.cmd run seed
+```
+
+The app stays build-safe without database env vars, but operational production should set `DATABASE_URL`, `DIRECT_URL`, Clerk keys, and `OWNER_EMAILS`.
+
 ## Environment Variables
 
 ```env
@@ -68,7 +77,8 @@ The automation engine includes:
 - Prisma models for brands, platforms, campaigns, content pillars, content packs, post drafts, image prompts, creative assets, approvals, metrics, automation runs, prompt templates, and research briefs.
 - Editable brand configs in `src/config/brands/*.json`.
 - Prompt templates in `src/prompts/*.md` with `renderPrompt(templateName, variables)`.
-- A local automation service that creates the sample daily pack, image prompts, approval records, filenames, manifest exports, approved-only scheduler CSVs, and weekly recommendation reports.
+- A DB-first automation service that persists Run Today content packs, post drafts, image prompts, approval records, filenames, manifest exports, approved-only scheduler CSVs, and weekly recommendation reports when `DATABASE_URL` is configured.
+- Deterministic fallback content when OpenAI or the database is not configured, clearly labeled as local fallback.
 - API routes for daily generation, image batches, Markdown/CSV/JSON exports, manual metrics import, weekly reports, and post status changes.
 - Internal pages for dashboard, generator, calendar, pack detail, post edit, image prompt edit, approval queue, metrics, and brand context.
 
@@ -79,6 +89,7 @@ V1 is intentionally manual-publish only. The app can open the right social site 
 SSWApp now includes the planned v1 data processing path for social dashboard exports:
 
 - CSV upload and pasted table preview.
+- Private original import byte storage in Postgres, capped by `SOCIAL_IMPORT_MAX_BYTES`.
 - Reusable column mapping templates.
 - Normalized metric rows and derived rates.
 - Post matching against generated/imported content.
@@ -87,6 +98,14 @@ SSWApp now includes the planned v1 data processing path for social dashboard exp
 - Weekly report, metrics CSV, insights JSON, and sanitized prompt-context exports.
 
 Raw imports are private and are not sent to AI providers. AI metric summaries and direct social API imports remain disabled by default with `ENABLE_AI_METRIC_ANALYSIS=false` and `ENABLE_SOCIAL_API_IMPORTS=false`.
+
+## Operational Readiness
+
+- `/api/health` reports boolean status for database, Clerk, OpenAI, and feature flags without exposing secrets.
+- `/api/automations/run-today` persists `ContentPack`, `PostDraft`, `ImagePrompt`, `Approval`, and `AutomationRun` records when the database is configured.
+- `/packs/[id]`, `/calendar`, `/approvals`, social imports, social performance, and export routes read persisted records first and fall back to sample data only when the database is not configured.
+- Scheduler exports are approved-only. Generated content starts as `needs_review`; approval records start as `pending`.
+- Clerk protects private pages and APIs when Clerk env vars are configured. `/api/health`, `/sign-in`, and `/sign-up` remain public.
 
 ## Automation Prompt Library
 
@@ -107,7 +126,8 @@ Generated content defaults to `needs_review`, approval records default to `pendi
 npm.cmd test
 npm.cmd run lint
 npm.cmd run typecheck
-$env:DATABASE_URL="postgresql://user:pass@localhost:5432/sswapp"; $env:DIRECT_URL=$env:DATABASE_URL; npx.cmd prisma validate
+npm.cmd run prisma:validate
+npm.cmd run build
 ```
 
 ## Brands Seeded

@@ -17,10 +17,12 @@ Editable brand configuration lives in `src/config/brands/*.json`. Those files in
 
 1. Open the dashboard or `/generator`.
 2. Add the date, selected brands, selected platforms, offer, theme, strategic priority, and any Deep Research notes.
-3. Generate a pack through `POST /api/generate/daily-pack` for OpenAI-backed/fallback post drafts or `POST /api/automation/generate-daily-content-pack` for the deterministic internal sample pack shape.
+3. Use `/run-today` or `POST /api/automations/run-today` for the operational daily workflow.
 4. Review every copy and image prompt approval.
 5. Export approved content only.
 6. Open social destinations from Social Launchpad and publish manually in the logged-in browser.
+
+When `DATABASE_URL` is configured, Run Today persists `ContentPack`, `PostDraft`, `ImagePrompt`, `Approval`, and `AutomationRun` records and redirects to `/packs/[id]`. When the database or OpenAI is missing, the app stays usable with a deterministic fallback pack labeled as local fallback.
 
 ## Approval Workflow
 
@@ -40,6 +42,8 @@ Publishing status is never advanced automatically. Scheduler exports must use ap
 - Image prompt JSON: `GET /api/exports/image-prompts`
 - Asset manifest JSON: `GET /api/exports/asset-manifest`
 - Weekly report markdown: `GET /api/exports/weekly-report`
+
+Add `?contentPackId=<id>` to export a specific persisted content pack. Scheduler CSV remains approved-only.
 
 ## Image Prompts
 
@@ -92,6 +96,15 @@ ENABLE_AUTO_APPROVAL=false
 ```
 
 Use a pooled Neon connection for app traffic in `DATABASE_URL`. Use a direct connection for Prisma migration operations in `DIRECT_URL`. Prisma 7 reads `DATABASE_URL` through `prisma.config.ts`.
+
+Deploy setup:
+
+```powershell
+npx.cmd prisma migrate deploy
+npm.cmd run seed
+```
+
+On Vercel, set the framework preset to Next.js, root directory to repo root, build command to `npm run build`, install command to `npm install`, and leave output directory as the Next.js default.
 
 ## Future Integrations
 

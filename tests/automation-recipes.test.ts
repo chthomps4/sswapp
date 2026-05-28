@@ -33,6 +33,20 @@ test("Run Today creates content pack, drafts, image prompts, approvals, and auto
   assert.equal(result.automationRun.promptKey, "daily-content-pack");
 });
 
+test("Run Today honors selected brand and platform filters", async () => {
+  const result = await runTodayAutomation({
+    date: "2026-05-28",
+    strategicPriority: "Local proof only.",
+    selectedBrands: ["al-brothers"],
+    selectedPlatforms: ["facebook", "google-business-profile"],
+  });
+  assert.ok(result.pack.postDrafts.length > 0);
+  assert.equal(result.pack.postDrafts.every((draft) => draft.brandSlug === "al-brothers"), true);
+  assert.equal(result.pack.postDrafts.every((draft) => ["facebook", "google-business-profile"].includes(draft.platformSlug)), true);
+  assert.equal(result.pack.postDrafts.every((draft) => draft.status === "needs_review"), true);
+  assert.equal(result.pack.approvals.every((approval) => approval.status === "pending"), true);
+});
+
 test("image prompt batch only fills missing prompts", async () => {
   const pack = createSampleDailyContentPack("2026-05-28");
   const missingOne = { ...pack, imagePrompts: pack.imagePrompts.slice(1) };

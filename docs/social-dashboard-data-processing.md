@@ -21,7 +21,20 @@ Sample fixtures live in `fixtures/social-imports/` and use fake data only.
 4. Preview the first 20 rows.
 5. Review detected platform, date range, headers, mapping template, validation status, and post matches.
 6. Confirm import.
-7. SSWApp creates social posts, metric snapshots, rollups, issues, and rule-based insights.
+7. SSWApp creates persisted social posts, metric snapshots, rollups, issues, and rule-based insights when `DATABASE_URL` is configured. Without database env vars, the UI uses deterministic sample data so routes remain testable.
+
+## Persistence
+
+The DB-first v1 stores:
+
+- `SocialDashboardImport` with private `originalFileBytes`, file hash, headers, detected platform, row count, status, and mapping template.
+- `SocialImportedRow` preview rows with raw JSON, normalized JSON, validation status, and matching metadata.
+- `SocialImportIssue` records for missing fields, duplicates, unsupported rows, and mapping problems.
+- `SocialPost` records for matched or newly imported posts.
+- `SocialMetricSnapshot` and `SocialMetricDailyRollup` records for reporting.
+- `SocialPerformanceInsight` records for recommendations that can feed future content themes.
+
+Duplicate imports are blocked by `originalFileHash`.
 
 ## Column Mapping
 
@@ -80,7 +93,7 @@ Accepted recommendations can become future `ContentTheme` records through `/api/
 ## Privacy
 
 - Imported data is private.
-- Original import bytes are modeled for private database storage.
+- Original import bytes are stored privately in Postgres v1 when the database is configured.
 - Raw rows are not logged intentionally.
 - Raw import data is not sent to OpenAI.
 - `ENABLE_AI_METRIC_ANALYSIS=false` by default.

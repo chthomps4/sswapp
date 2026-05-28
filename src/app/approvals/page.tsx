@@ -1,12 +1,24 @@
 import { ContentPageShell } from "@/components/content-page-shell";
 import { createSampleDailyContentPack } from "@/lib/automation-engine";
+import { isDatabaseConfigured, listApprovalQueue } from "@/lib/db-operational";
 
-export default function ApprovalsPage() {
-  const pack = createSampleDailyContentPack();
+export const dynamic = "force-dynamic";
+
+export default async function ApprovalsPage() {
+  const dbApprovals = isDatabaseConfigured() ? await listApprovalQueue() : null;
+  const pack = dbApprovals ? null : createSampleDailyContentPack();
+  const approvals =
+    dbApprovals?.map((approval) => ({
+      id: approval.id,
+      type: approval.type.toLowerCase(),
+      notes: approval.notes || `${approval.postDraft?.brand.name || "Brand"} / ${approval.postDraft?.platform.name || "platform"}`,
+      status: approval.status.toLowerCase(),
+    })) || pack?.approvals.slice(0, 12) || [];
+
   return (
     <ContentPageShell eyebrow="Approval queue" title="Approval Queue" description="Copy, image prompt, asset, and full-post approval records. Approval remains required before export or manual publishing.">
       <div className="grid gap-3">
-        {pack.approvals.slice(0, 12).map((approval) => (
+        {approvals.map((approval) => (
           <div key={approval.id} className="flex flex-col gap-2 rounded-lg border border-stone-200 bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-sm font-semibold">{approval.type}</p>

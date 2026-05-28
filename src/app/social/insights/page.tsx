@@ -1,12 +1,14 @@
 import { ContentPageShell } from "@/components/content-page-shell";
-import { createSampleSocialImport } from "@/lib/social-dashboard-engine";
+import { getPersistedSocialInsights } from "@/lib/db-operational";
 
-export default function SocialInsightsPage() {
-  const sample = createSampleSocialImport();
+export const dynamic = "force-dynamic";
+
+export default async function SocialInsightsPage() {
+  const insights = await getPersistedSocialInsights();
   return (
     <ContentPageShell eyebrow="Recommendations" title="Insights and Recommendations" description="Rule-based performance insights that can feed content themes and repurpose tasks.">
       <section className="grid gap-3">
-        {sample.insights.map((insight) => (
+        {insights.map((insight) => (
           <article key={insight.id} className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>

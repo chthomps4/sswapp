@@ -91,7 +91,7 @@ function createRun({
     promptKey,
     promptVersion: metadata?.version,
     promptInputHash: hashValue(input),
-    modelUsed: metadata?.recommendedModel || "rule-based-local",
+    modelUsed: process.env.OPENAI_API_KEY ? metadata?.recommendedModel || "openai-configured" : "rule-based-local",
     recordsCreated,
   };
 }
@@ -118,6 +118,124 @@ function forceReviewStatuses(pack: GeneratedContentPack): GeneratedContentPack {
     postDrafts: pack.postDrafts.map((draft) => ({ ...draft, status: "needs_review" })),
     imagePrompts: pack.imagePrompts.map((prompt) => ({ ...prompt, status: "needs_review" })),
     approvals: pack.approvals.map((approval) => ({ ...approval, status: "pending", approvedAt: "" })),
+  };
+}
+
+function platformName(slug: string) {
+  return seedPlatforms.find((platform) => platform.slug === slug)?.name || slug;
+}
+
+function constrainPackToSelections(pack: GeneratedContentPack, selectedBrands: string[], selectedPlatforms: string[], dailyTheme: string): GeneratedContentPack {
+  const brandSet = new Set(selectedBrands);
+  const platformSet = new Set(selectedPlatforms);
+  let drafts = pack.postDrafts.filter((draft) => brandSet.has(draft.brandSlug) && platformSet.has(draft.platformSlug));
+
+  if (!drafts.length) {
+    const matchingBrands = pack.postDrafts.filter((draft) => brandSet.has(draft.brandSlug));
+    const sourceDrafts = matchingBrands.length ? matchingBrands : pack.postDrafts;
+    drafts = sourceDrafts.slice(0, Math.max(1, Math.min(selectedBrands.length || 1, 4))).map((draft, index) => {
+      const brandSlug = selectedBrands[index % Math.max(1, selectedBrands.length)] || draft.brandSlug;
+      const platformSlug = selectedPlatforms[index % Math.max(1, selectedPlatforms.length)] || draft.platformSlug;
+      const brand = seedBrands.find((item) => item.slug === brandSlug);
+      return {
+        ...draft,
+        id: `${pack.contentPack.id}-post-generated-${index + 1}`,
+        brandSlug,
+        brandName: brand?.name || draft.brandName,
+        platformSlug,
+        platformName: platformName(platformSlug),
+        hook: draft.hook,
+        body: `${draft.body}\n\nDaily theme: ${dailyTheme}`,
+        altText: draft.altText || `Review-ready social draft for ${brand?.name || brandSlug}.`,
+      };
+    });
+  }
+
+  const draftIds = new Set(drafts.map((draft) => draft.id));
+  const existingImagesByDraftId = new Map(pack.imagePrompts.map((prompt) => [prompt.postDraftId, prompt]));
+  const existingFilenames: string[] = [];
+  const imagePrompts = drafts.map((draft) => {
+    const existing = existingImagesByDraftId.get(draft.id);
+    if (existing) {
+      existingFilenames.push(existing.filename);
+      return existing;
+    }
+    const filename = generateAssetFilename({
+      date: draft.date,
+      brandSlug: draft.brandSlug,
+      platformSlug: draft.platformSlug,
+      contentPillarSlug: draft.contentPillarSlug,
+      campaignSlug: draft.campaignSlug,
+      existingFilenames,
+    });
+    existingFilenames.push(filename);
+    return {
+      id: `${draft.id}-image-01`,
+      postDraftId: draft.id,
+      brandSlug: draft.brandSlug,
+      platformSlug: draft.platformSlug,
+      imageType: draft.platformSlug === "instagram" ? ("carousel" as const) : draft.platformSlug === "google-business-profile" ? ("google_business_photo_post" as const) : ("checklist" as const),
+      headlineText: draft.hook,
+      supportingText: draft.ctaSoft,
+      prompt: `Create a platform-native ${draft.platformName} visual for ${draft.brandName}. Clarify this signal: ${draft.hook}. Keep it readable, specific, and review-ready.`,
+      negativePrompt: "No fake metrics, no auto-publishing language, no clutter, no generic stock-photo energy.",
+      layoutNotes: "Readable headline, clear hierarchy, stable margins, and mobile-safe spacing.",
+      canvaNotes: "Build as a reusable internal template with headline, signal, and next action zones.",
+      adobeExpressNotes: "Export at the platform aspect ratio and keep text accessible.",
+      photoshopNotes: "Check contrast, crop for mobile, and remove distracting elements.",
+      altText: draft.altText,
+      aspectRatio: draft.platformSlug === "instagram" ? "4:5" : draft.platformSlug === "google-business-profile" ? "4:3" : "1:1",
+      filename,
+      status: "needs_review" as const,
+    };
+  });
+
+  const approvals = [
+    ...drafts.map((draft) => ({
+      id: `${draft.id}-approval-copy`,
+      contentPackId: pack.contentPack.id,
+      postDraftId: draft.id,
+      type: "copy" as const,
+      status: "pending" as const,
+      reviewer: "",
+      notes: "Review copy before manual publishing.",
+      approvedAt: "",
+    })),
+    ...imagePrompts.map((prompt) => ({
+      id: `${prompt.id}-approval-image`,
+      contentPackId: pack.contentPack.id,
+      postDraftId: prompt.postDraftId,
+      imagePromptId: prompt.id,
+      type: "image_prompt" as const,
+      status: "pending" as const,
+      reviewer: "",
+      notes: "Review image prompt before creating assets.",
+      approvedAt: "",
+    })),
+    ...drafts.map((draft) => ({
+      id: `${draft.id}-approval-full-post`,
+      contentPackId: pack.contentPack.id,
+      postDraftId: draft.id,
+      imagePromptId: imagePrompts.find((prompt) => prompt.postDraftId === draft.id)?.id,
+      type: "full_post" as const,
+      status: "pending" as const,
+      reviewer: "",
+      notes: "Approve only after copy and image prompt are both ready.",
+      approvedAt: "",
+    })),
+  ];
+
+  return {
+    ...pack,
+    contentPack: {
+      ...pack.contentPack,
+      dailyTheme,
+      selectedBrands,
+      status: "needs_review",
+    },
+    postDrafts: drafts.map((draft) => ({ ...draft, status: "needs_review" })),
+    imagePrompts: imagePrompts.filter((prompt) => draftIds.has(prompt.postDraftId)).map((prompt) => ({ ...prompt, status: "needs_review" })),
+    approvals,
   };
 }
 
@@ -286,7 +404,7 @@ export async function runTodayAutomation(input: RunTodayInput): Promise<Automati
     recentPerformanceContext: performanceContext,
     businessNotes: input.businessNotes || "Manual publishing only. Human review required.",
   });
-  const pack = forceReviewStatuses(createSampleDailyContentPack(date));
+  const pack = constrainPackToSelections(forceReviewStatuses(createSampleDailyContentPack(date)), selectedBrands, selectedPlatforms, dailyTheme);
   const output = {
     contentPackId: pack.contentPack.id,
     posts: pack.postDrafts.length,

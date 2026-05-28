@@ -1,6 +1,7 @@
 "use client";
 
 import { CalendarDays, CheckCircle2, FileJson, FileText, ImageIcon, Play, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { seedBrands, seedCampaigns, seedPlatforms } from "@/lib/seed-data";
 
@@ -134,10 +135,10 @@ export function RunTodayPanel() {
             <Play size={16} />
             {isRunning ? "Running..." : "Run Today"}
           </button>
-          <a href="/packs/run-today" className="inline-flex items-center gap-2 rounded-md border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-800 hover:border-emerald-300">
+          <Link href="/packs/run-today" className="inline-flex items-center gap-2 rounded-md border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-800 hover:border-emerald-300">
             <CalendarDays size={16} />
             View sample pack
-          </a>
+          </Link>
         </div>
       </div>
 
