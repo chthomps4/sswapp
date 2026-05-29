@@ -68,9 +68,14 @@ test("exports include review and image prompt details", () => {
 });
 
 test("approved-only filtering and weekly ranking work", () => {
-  const approved = approvedOnly([{ ...seedPosts[0], approvalStatus: "approved" }, seedPosts[1]]);
+  const approved = approvedOnly([
+    { ...seedPosts[0], approvalStatus: "approved" },
+    { ...seedPosts[1], approvalStatus: "scheduled" },
+    { ...seedPosts[2], approvalStatus: "needs_revision" },
+  ]);
   const report = weeklyReport(seedPosts);
   assert.equal(approved.length, 1);
+  assert.equal(approved[0].approvalStatus, "approved");
   assert.ok(Array.isArray(report.bestPosts));
   assert.ok(Array.isArray(report.recommendations));
 });
@@ -103,7 +108,12 @@ test("exports format review markdown, approved-only scheduler CSV, and manifests
   const emptyScheduler = exportSchedulerCsv(pack);
   const approvedScheduler = exportSchedulerCsv({
     ...pack,
-    postDrafts: [{ ...pack.postDrafts[0], status: "approved" }, ...pack.postDrafts.slice(1)],
+    postDrafts: [
+      { ...pack.postDrafts[0], status: "approved" },
+      { ...pack.postDrafts[1], status: "scheduled" },
+      { ...pack.postDrafts[2], status: "needs_revision" },
+      ...pack.postDrafts.slice(3),
+    ],
   });
 
   assert.match(review, /Daily Content Pack/);
@@ -111,6 +121,8 @@ test("exports format review markdown, approved-only scheduler CSV, and manifests
   assert.equal(manifest.assets.length, pack.imagePrompts.length);
   assert.equal(emptyScheduler.split("\n").length, 1);
   assert.equal(parseCsv(approvedScheduler).length, 2);
+  assert.doesNotMatch(approvedScheduler, /scheduled/);
+  assert.doesNotMatch(approvedScheduler, /needs_revision/);
 });
 
 test("metrics recommendations identify repeat and revision actions", () => {

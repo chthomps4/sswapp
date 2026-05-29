@@ -8,5 +8,6 @@ export function getOwnerEmails() {
 export function isOwnerEmail(email: string | null | undefined) {
   if (!email) return false;
   const owners = getOwnerEmails();
-  return owners.length === 0 || owners.includes(email.toLowerCase());
+  if (!owners.length) return false;
+  return owners.includes(email.toLowerCase());
 }
