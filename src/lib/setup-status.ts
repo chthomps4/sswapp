@@ -1,3 +1,4 @@
+import { getClerkRuntimeState } from "./clerk-runtime";
 import { isDatabaseConfigured } from "./db-operational";
 
 export type SetupStatusItem = {
@@ -9,11 +10,11 @@ export type SetupStatusItem = {
 };
 
 export function getSetupStatus() {
-  const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "";
-  const clerkSecretKey = process.env.CLERK_SECRET_KEY || "";
-  const clerkConfigured = Boolean(clerkPublishableKey && clerkSecretKey);
-  const clerkKeyMode =
-    !clerkConfigured ? "missing" : clerkPublishableKey.startsWith("pk_live_") && clerkSecretKey.startsWith("sk_live_") ? "live" : "development";
+  const clerk = getClerkRuntimeState();
+  const clerkKeyMode = clerk.keyMode;
+  const clerkAuthAvailable = clerk.shouldUseClerkAuth;
+  const clerkConfigured = clerk.isConfigured;
+  const clerkProductionReady = clerkKeyMode === "live";
   const ownerEmailsConfigured = Boolean(process.env.OWNER_EMAILS);
   const databaseConfigured = isDatabaseConfigured();
   const openaiConfigured = Boolean(process.env.OPENAI_API_KEY);
@@ -31,7 +32,7 @@ export function getSetupStatus() {
     {
       key: "clerk",
       label: "Clerk production keys",
-      ok: clerkKeyMode === "live",
+      ok: clerkProductionReady,
       value: clerkKeyMode,
       action: "Replace Vercel Clerk env vars with pk_live... and sk_live..., then redeploy.",
     },
@@ -68,7 +69,10 @@ export function getSetupStatus() {
   const blockers = items.filter((item) => !item.ok && item.key !== "openai");
   return {
     ready: blockers.length === 0,
+    clerkAuthAvailable,
+    clerkConfigured,
     clerkKeyMode,
+    clerkProductionReady,
     items,
     blockers,
   };

@@ -1,13 +1,23 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { getClerkRuntimeState } from "./clerk-runtime";
 import { isOwnerEmail } from "./owner-access";
 
 export function isClerkConfigured() {
-  return Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY);
+  return getClerkRuntimeState().shouldUseClerkAuth;
 }
 
 export async function requireOwnerResponse() {
-  if (!isClerkConfigured()) return null;
+  if (!isClerkConfigured()) {
+    return NextResponse.json(
+      {
+        message:
+          "Clerk is not configured for protected actions. Set Clerk publishable/secret keys and return to a live auth environment.",
+      },
+      { status: 503 },
+    );
+  }
+
   const user = await currentUser();
   const email = user?.primaryEmailAddress?.emailAddress || user?.emailAddresses?.[0]?.emailAddress || "";
   if (!user || !isOwnerEmail(email)) {

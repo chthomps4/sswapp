@@ -1,5 +1,6 @@
 import { createSampleDailyContentPack } from "./automation-engine";
 import { getLatestContentPack, isDatabaseConfigured } from "./db-operational";
+import { getClerkRuntimeState } from "./clerk-runtime";
 import { prisma } from "./prisma";
 import { seedBrands } from "./seed-data";
 import type { Brand, GeneratedContentPack, ImagePromptRecord, MetricSnapshot, PostDraftRecord, PostVariant } from "./types";
@@ -150,12 +151,11 @@ function postsFromPack(pack: GeneratedContentPack) {
 }
 
 function configStatus(): DashboardConfigStatus {
-  const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "";
-  const clerkSecretKey = process.env.CLERK_SECRET_KEY || "";
+  const clerk = getClerkRuntimeState();
   return {
     databaseConfigured: isDatabaseConfigured(),
-    clerkConfigured: Boolean(clerkPublishableKey && clerkSecretKey),
-    clerkProductionReady: clerkPublishableKey.startsWith("pk_live_") && clerkSecretKey.startsWith("sk_live_"),
+    clerkConfigured: clerk.isConfigured,
+    clerkProductionReady: clerk.keyMode === "live",
     ownerEmailsConfigured: Boolean(process.env.OWNER_EMAILS),
     openaiConfigured: Boolean(process.env.OPENAI_API_KEY),
   };

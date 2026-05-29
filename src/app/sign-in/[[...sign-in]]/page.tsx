@@ -27,11 +27,11 @@ export default function SignInPage() {
           ) : null}
         </section>
         <div className="flex justify-center">
-          {setup.clerkKeyMode === "missing" ? (
+          {!setup.clerkAuthAvailable ? (
             <div className="w-full rounded-lg border border-amber-200 bg-amber-50 p-5 text-amber-950 shadow-sm">
-              <p className="font-semibold">Clerk keys are missing</p>
+              <p className="font-semibold">Clerk production readiness check required</p>
               <p className="mt-2 text-sm leading-6">
-                Add Clerk keys to the environment before rendering the sign-in form. The setup status page lists the exact blocker.
+                Use a compatible Clerk production configuration before rendering the sign-in form. The setup status page lists the exact blocker.
               </p>
               <Link href="/setup-status" className="mt-3 inline-flex rounded-md bg-[#1e6b4d] px-4 py-2 text-sm font-medium text-white">
                 Open setup status

@@ -1,5 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
+import { getClerkRuntimeState } from "./lib/clerk-runtime";
 
 const isPublicRoute = createRouteMatcher(["/api/health(.*)", "/setup-status(.*)", "/sign-in(.*)", "/sign-up(.*)", "/__clerk(.*)"]);
 const isApiRoute = createRouteMatcher(["/api(.*)"]);
@@ -11,21 +12,41 @@ const clerkProxyOptions = {
   },
 };
 
-const optionalClerkMiddleware = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-  ? clerkMiddleware(async (auth, request) => {
-      if (!isPublicRoute(request)) {
-        if (isApiRoute(request)) {
-          await auth.protect();
-          return;
-        }
-        await auth.protect({
-          unauthenticatedUrl: new URL("/sign-in", request.url).toString(),
-        });
+const clerkState = getClerkRuntimeState();
+
+async function guardedClerkAuth(request: NextRequest, event: NextFetchEvent) {
+  if (!clerkState.shouldUseClerkAuth) {
+    if (clerkState.shouldProtectPrivatelyInProduction && !isPublicRoute(request)) {
+      return NextResponse.redirect(new URL("/setup-status", request.url));
+    }
+    return NextResponse.next();
+  }
+
+  const handler = clerkMiddleware(async (auth, request) => {
+    if (!isPublicRoute(request)) {
+      if (isApiRoute(request)) {
+        await auth.protect();
+        return;
       }
-    }, clerkProxyOptions)
-  : function publicFallbackMiddleware() {
-      return NextResponse.next();
-    };
+      await auth.protect({
+        unauthenticatedUrl: new URL("/sign-in", request.url).toString(),
+      });
+    }
+  }, clerkProxyOptions);
+
+  try {
+    return await handler(request, event);
+  } catch {
+    if (!isPublicRoute(request)) {
+      return NextResponse.redirect(new URL("/setup-status", request.url));
+    }
+    return NextResponse.next();
+  }
+}
+
+const optionalClerkMiddleware = async (request: NextRequest, event: NextFetchEvent) => {
+  return guardedClerkAuth(request, event);
+};
 
 export default optionalClerkMiddleware;
 

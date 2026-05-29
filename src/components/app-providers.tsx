@@ -1,7 +1,10 @@
 import { ClerkProvider } from "@clerk/nextjs";
+import { getClerkRuntimeState } from "@/lib/clerk-runtime";
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
-  if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+  const clerk = getClerkRuntimeState();
+
+  if (!clerk.shouldUseClerkAuth) {
     return <>{children}</>;
   }
 
