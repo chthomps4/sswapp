@@ -1,12 +1,24 @@
 import { ContentPageShell } from "@/components/content-page-shell";
-import { createSampleSocialImport, identifyTopPosts } from "@/lib/social-dashboard-engine";
+import { getOperationalDashboardData } from "@/lib/dashboard-data";
+import { getSocialPerformanceData } from "@/lib/db-operational";
+import { identifyTopPosts } from "@/lib/social-dashboard-engine";
+import { notFound } from "next/navigation";
+
+export const dynamic = "force-dynamic";
 
 export default async function SocialPostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const sample = createSampleSocialImport();
-  const post = sample.socialPosts.find((item) => item.id === id) || sample.socialPosts[0];
-  const metric = sample.snapshots.find((item) => item.socialPostId === post.id);
-  const score = identifyTopPosts(sample.snapshots, sample.socialPosts).find((item) => item.post?.id === post.id)?.score || 0;
+  const dashboardData = await getOperationalDashboardData();
+  if (dashboardData.snapshot.socialSnapshotCount === 0) {
+    notFound();
+  }
+  const performance = await getSocialPerformanceData();
+  const post = performance.socialPosts.find((item) => item.id === id);
+  if (!post) {
+    notFound();
+  }
+  const metric = performance.snapshots.find((item) => item.socialPostId === post.id);
+  const score = identifyTopPosts(performance.snapshots, performance.socialPosts).find((item) => item.post?.id === post.id)?.score || 0;
 
   return (
     <ContentPageShell eyebrow="Post performance" title={post.hook || post.title} description="Post-level metric snapshots, matching context, and recommendation evidence.">

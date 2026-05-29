@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { ContentPageShell } from "@/components/content-page-shell";
 import { isDatabaseConfigured, listSocialImports } from "@/lib/db-operational";
-import { createSampleSocialImport, mappingTemplates, socialAccounts } from "@/lib/social-dashboard-engine";
+import { mappingTemplates, socialAccounts } from "@/lib/social-dashboard-engine";
 
 export const dynamic = "force-dynamic";
 
 export default async function SocialImportsPage() {
   const dbImports = isDatabaseConfigured() ? await listSocialImports() : null;
-  const sample = dbImports ? null : createSampleSocialImport();
   const imports =
     dbImports?.map((item) => ({
       id: item.id,
@@ -17,7 +16,7 @@ export default async function SocialImportsPage() {
       status: item.status.toLowerCase(),
       detectedDateRangeStart: item.detectedDateRangeStart?.toISOString().slice(0, 10) || "",
       detectedDateRangeEnd: item.detectedDateRangeEnd?.toISOString().slice(0, 10) || "",
-    })) || [sample!.import];
+    })) || [];
 
   return (
     <ContentPageShell
@@ -46,22 +45,30 @@ export default async function SocialImportsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-stone-100">
-            {imports.map((item) => (
-              <tr key={item.id}>
-                <td className="px-4 py-3 font-medium">{item.originalFilename}</td>
-                <td className="px-4 py-3">{item.detectedPlatform}</td>
-                <td className="px-4 py-3">{item.rowCount}</td>
-                <td className="px-4 py-3">{item.status}</td>
-                <td className="px-4 py-3">
-                  {item.detectedDateRangeStart} to {item.detectedDateRangeEnd}
-                </td>
-                <td className="px-4 py-3">
-                  <Link href={`/social/imports/${item.id}`} className="text-[#1e6b4d] hover:underline">
-                    View import
-                  </Link>
+            {imports.length ? (
+              imports.map((item) => (
+                <tr key={item.id}>
+                  <td className="px-4 py-3 font-medium">{item.originalFilename}</td>
+                  <td className="px-4 py-3">{item.detectedPlatform}</td>
+                  <td className="px-4 py-3">{item.rowCount}</td>
+                  <td className="px-4 py-3">{item.status}</td>
+                  <td className="px-4 py-3">
+                    {item.detectedDateRangeStart} to {item.detectedDateRangeEnd}
+                  </td>
+                  <td className="px-4 py-3">
+                    <Link href={`/social/imports/${item.id}`} className="text-[#1e6b4d] hover:underline">
+                      View import
+                    </Link>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td className="px-4 py-6 text-sm text-stone-600" colSpan={6}>
+                  No social imports have been confirmed yet. Start with a CSV or pasted dashboard export.
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </section>

@@ -39,10 +39,10 @@ export default async function CalendarPage() {
   const ownerActionItems = getOwnerActionItems();
 
   return (
-    <ContentPageShell
+      <ContentPageShell
       eyebrow="Calendar"
       title="Business and Content Calendar"
-      description="Private operating view for business cadence, Google Calendar integration planning, generated content drafts, and dead-page rescue work."
+      description="Private operating view for business cadence, Google Calendar integration planning, and generated content drafts."
     >
       <section className="grid gap-4 lg:grid-cols-[1.4fr_0.9fr]">
         <div className="rounded-lg border border-stone-200 bg-white p-5 shadow-sm">
