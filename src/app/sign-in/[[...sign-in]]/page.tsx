@@ -1,6 +1,5 @@
 import { SignIn } from "@clerk/nextjs";
 import Link from "next/link";
-import { GoogleSignInButton } from "@/components/google-sign-in-button";
 import { getSetupStatus } from "@/lib/setup-status";
 
 export default function SignInPage() {
@@ -39,18 +38,15 @@ export default function SignInPage() {
               </Link>
             </div>
           ) : (
-            <>
-              <GoogleSignInButton />
-              <div className="flex min-h-[220px] justify-center">
-                <SignIn
-                  path="/sign-in"
-                  routing="path"
-                  signUpUrl="/sign-up"
-                  forceRedirectUrl="/auth/complete"
-                  fallbackRedirectUrl="/auth/complete"
-                />
-              </div>
-            </>
+            <div className="flex min-h-[220px] justify-center">
+              <SignIn
+                path="/sign-in"
+                routing="path"
+                signUpUrl="/sign-up"
+                forceRedirectUrl="/auth/complete"
+                fallbackRedirectUrl="/auth/complete"
+              />
+            </div>
           )}
         </div>
       </div>
