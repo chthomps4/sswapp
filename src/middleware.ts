@@ -4,6 +4,13 @@ import { NextResponse } from "next/server";
 const isPublicRoute = createRouteMatcher(["/api/health(.*)", "/setup-status(.*)", "/sign-in(.*)", "/sign-up(.*)", "/__clerk(.*)"]);
 const isApiRoute = createRouteMatcher(["/api(.*)"]);
 
+const clerkProxyOptions = {
+  frontendApiProxy: {
+    enabled: true,
+    path: "/__clerk",
+  },
+};
+
 const optionalClerkMiddleware = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
   ? clerkMiddleware(async (auth, request) => {
       if (!isPublicRoute(request)) {
@@ -15,7 +22,7 @@ const optionalClerkMiddleware = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
           unauthenticatedUrl: new URL("/sign-in", request.url).toString(),
         });
       }
-    })
+    }, clerkProxyOptions)
   : function publicFallbackMiddleware() {
       return NextResponse.next();
     };

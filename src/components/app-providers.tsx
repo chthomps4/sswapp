@@ -7,6 +7,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
 
   return (
     <ClerkProvider
+      proxyUrl="/__clerk"
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
       signInFallbackRedirectUrl="/"
