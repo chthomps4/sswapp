@@ -196,13 +196,17 @@ export function SswDashboard({ brands, posts, dashboard }: DashboardProps) {
       <div className="grid min-h-screen lg:grid-cols-[248px_1fr]">
         <aside className="border-r border-stone-200 bg-[#15211b] px-4 py-5 text-stone-100">
           <div className="flex items-center gap-3">
-            <div className="flex size-11 items-center justify-center rounded-lg bg-white p-1.5 shadow-sm">
+            <div
+              className="flex size-11 items-center justify-center rounded-lg bg-white p-1.5 shadow-sm"
+              style={{ height: 44, width: 44 }}
+            >
               <Image
                 src={signalWorkshopAssets.swMonogram.src}
                 alt={signalWorkshopAssets.swMonogram.alt}
                 width={44}
                 height={44}
                 className="h-full w-full object-contain"
+                style={{ height: "100%", width: "100%", objectFit: "contain" }}
                 priority
               />
             </div>
@@ -257,13 +261,17 @@ export function SswDashboard({ brands, posts, dashboard }: DashboardProps) {
         <main className="min-w-0 px-4 py-5 sm:px-6 lg:px-8">
           <header className="flex flex-col gap-4 border-b border-stone-200 pb-5 xl:flex-row xl:items-center xl:justify-between">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-              <div className="flex h-24 w-full max-w-[280px] items-center justify-center rounded-lg border border-stone-200 bg-white p-3 shadow-sm">
+              <div
+                className="flex h-24 w-full max-w-[280px] items-center justify-center rounded-lg border border-stone-200 bg-white p-3 shadow-sm"
+                style={{ height: 96, maxWidth: 280, width: "100%" }}
+              >
                 <Image
                   src={signalWorkshopAssets.primaryLogo.src}
                   alt={signalWorkshopAssets.primaryLogo.alt}
                   width={280}
                   height={180}
                   className="h-full w-full object-contain"
+                  style={{ height: "100%", width: "100%", objectFit: "contain" }}
                   priority
                 />
               </div>
@@ -345,13 +353,17 @@ export function SswDashboard({ brands, posts, dashboard }: DashboardProps) {
                   ))}
                 </div>
               </div>
-              <div className="relative min-h-[240px] border-t border-white/10 bg-stone-950 lg:border-l lg:border-t-0">
+              <div
+                className="relative min-h-[240px] border-t border-white/10 bg-stone-950 lg:border-l lg:border-t-0"
+                style={{ minHeight: 240, position: "relative" }}
+              >
                 <Image
                   src={heroAsset.src}
                   alt={heroAsset.alt}
                   fill
                   sizes="(min-width: 1024px) 50vw, 100vw"
                   className="object-cover"
+                  style={{ objectFit: "cover" }}
                   priority
                 />
               </div>

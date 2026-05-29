@@ -13,13 +13,17 @@ export default function RunTodayPage() {
       <section className="mb-4 overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
         <div className="grid gap-0 lg:grid-cols-[minmax(0,0.85fr)_minmax(360px,1.15fr)]">
           <div className="flex flex-col justify-center p-4 sm:p-5">
-            <div className="flex size-14 items-center justify-center rounded-lg border border-stone-200 bg-white p-2 shadow-sm">
+            <div
+              className="flex size-14 items-center justify-center rounded-lg border border-stone-200 bg-white p-2 shadow-sm"
+              style={{ height: 56, width: 56 }}
+            >
               <Image
                 src={signalWorkshopAssets.swMonogram.src}
                 alt={signalWorkshopAssets.swMonogram.alt}
                 width={56}
                 height={56}
                 className="h-full w-full object-contain"
+                style={{ height: "100%", width: "100%", objectFit: "contain" }}
                 priority
               />
             </div>
@@ -28,13 +32,17 @@ export default function RunTodayPage() {
               Generate drafts, image prompts, and approval records from the same Signal Workshop operating rhythm without publishing or approving anything automatically.
             </p>
           </div>
-          <div className="relative min-h-[220px] border-t border-stone-200 lg:border-l lg:border-t-0">
+          <div
+            className="relative min-h-[220px] border-t border-stone-200 lg:border-l lg:border-t-0"
+            style={{ minHeight: 220, position: "relative" }}
+          >
             <Image
               src={signalWorkshopAssets.operationsDesk.src}
               alt={signalWorkshopAssets.operationsDesk.alt}
               fill
               sizes="(min-width: 1024px) 50vw, 100vw"
               className="object-cover"
+              style={{ objectFit: "cover" }}
               priority
             />
           </div>
