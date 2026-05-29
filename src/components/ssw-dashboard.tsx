@@ -13,19 +13,19 @@ import {
   Link2,
   Megaphone,
   Play,
+  Radar,
   Send,
   Sparkles,
   TableProperties,
 } from "lucide-react";
+import Link from "next/link";
 import { useMemo, useState } from "react";
+import type { DashboardSnapshot } from "@/lib/dashboard-data";
 import type { Brand, GeneratedPost, PostVariant } from "@/lib/types";
-import { approvedOnly, exportMarkdownReview, getLaunchUrl, stringifyPostsCsv, weeklyReport } from "@/lib/content-engine";
-import { seedContentPillars, seedPlatforms } from "@/lib/seed-data";
+import { getLaunchUrl, weeklyReport } from "@/lib/content-engine";
 import {
   createSampleDailyContentPack,
-  exportAssetManifestJson,
   exportDailyReviewMarkdown,
-  exportImagePromptsJson,
   exportSchedulerCsv,
   exportWeeklyReportMarkdown,
   sampleMetricsForPack,
@@ -34,6 +34,24 @@ import {
 type DashboardProps = {
   brands: Brand[];
   posts: PostVariant[];
+  dashboard: DashboardSnapshot;
+  latestAudit?: {
+    id: string;
+    auditDate: string;
+    readinessLevel: string;
+    overallHealthScore: number;
+    totalGaps: number;
+    criticalCount: number;
+    highCount: number;
+    summary: string;
+  } | null;
+};
+
+const sourceTone: Record<string, string> = {
+  database: "border-emerald-200 bg-emerald-50 text-emerald-900",
+  empty_database: "border-amber-200 bg-amber-50 text-amber-900",
+  deterministic_fallback: "border-stone-200 bg-stone-50 text-stone-800",
+  error_fallback: "border-red-200 bg-red-50 text-red-900",
 };
 
 const statusLabels: Record<string, string> = {
@@ -102,18 +120,50 @@ function IconButton({
   );
 }
 
-export function SswDashboard({ brands, posts }: DashboardProps) {
+export function SswDashboard({ brands, posts, dashboard, latestAudit }: DashboardProps) {
   const [activeBrand, setActiveBrand] = useState(brands[0]?.slug || "signal-workshop");
   const [drafts, setDrafts] = useState<PostVariant[]>(posts);
   const [theme, setTheme] = useState("Signal over noise");
   const [researchBrief, setResearchBrief] = useState("");
   const [generationNote, setGenerationNote] = useState("Prompt-assisted and API-backed generation are ready.");
+  const [statusNote, setStatusNote] = useState(
+    dashboard.statusMode === "persistent"
+      ? "Dashboard status actions will call the persisted approval API."
+      : "Dashboard status actions are preview-only until a persisted content pack is loaded.",
+  );
   const activeBrandData = brands.find((brand) => brand.slug === activeBrand) || brands[0];
   const reviewQueue = drafts.filter((post) => ["draft", "needs_review", "needs_revision"].includes(post.approvalStatus));
   const report = weeklyReport(drafts);
   const approvedCount = drafts.filter((post) => post.approvalStatus === "approved").length;
   const samplePack = useMemo(() => createSampleDailyContentPack(), []);
   const sampleMetrics = useMemo(() => sampleMetricsForPack(samplePack), [samplePack]);
+  const packExportQuery = dashboard.statusMode === "persistent" ? `?contentPackId=${encodeURIComponent(dashboard.latestPackId)}` : "";
+  const operationalCards = [
+    {
+      label: "Content Source",
+      value: dashboard.contentSourceLabel,
+      detail: dashboard.latestPackTitle || "No pack loaded",
+      tone: dashboard.contentSource,
+    },
+    {
+      label: "Review Queue",
+      value: String(reviewQueue.length),
+      detail: `${dashboard.pendingApprovalCount} pending approvals`,
+      tone: reviewQueue.length > 0 ? "empty_database" : "database",
+    },
+    {
+      label: "Image Prompts",
+      value: String(dashboard.imagePromptCount),
+      detail: `${dashboard.totalDrafts} current drafts`,
+      tone: dashboard.imagePromptCount > 0 ? "database" : "empty_database",
+    },
+    {
+      label: "Social Metrics",
+      value: dashboard.socialSourceLabel,
+      detail: `${dashboard.socialImportCount} imports / ${dashboard.socialSnapshotCount} snapshots`,
+      tone: dashboard.socialSource,
+    },
+  ];
 
   const socialLinks = useMemo(() => activeBrandData?.socialProfiles || [], [activeBrandData]);
 
@@ -149,12 +199,27 @@ export function SswDashboard({ brands, posts }: DashboardProps) {
     setGenerationNote(data.mode === "fallback" ? `Fallback pack created. ${data.error || ""}` : "OpenAI pack created and queued for review.");
   }
 
-  function approvePost(id: string) {
-    setDrafts((current) => current.map((post) => (post.id === id ? { ...post, approvalStatus: "approved" } : post)));
-  }
-
-  function markRevision(id: string) {
-    setDrafts((current) => current.map((post) => (post.id === id ? { ...post, approvalStatus: "needs_revision" } : post)));
+  async function updateDraftStatus(id: string, status: "approved" | "needs_revision") {
+    if (dashboard.statusMode === "persistent") {
+      const response = await fetch(`/api/posts/${id}/status`, {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          status,
+          reviewer: "owner",
+          notes: status === "approved" ? "Approved from dashboard." : "Requested revision from dashboard.",
+        }),
+      });
+      if (!response.ok) {
+        const data = (await response.json().catch(() => null)) as { message?: string } | null;
+        setStatusNote(data?.message || "Status update failed. Open Approval Queue for details.");
+        return;
+      }
+      setStatusNote(status === "approved" ? "Approval persisted." : "Revision request persisted.");
+    } else {
+      setStatusNote("Preview-only status change. Run Today or seed the database before operational approval.");
+    }
+    setDrafts((current) => current.map((post) => (post.id === id ? { ...post, approvalStatus: status } : post)));
   }
 
   return (
@@ -181,6 +246,7 @@ export function SswDashboard({ brands, posts }: DashboardProps) {
               ["Social Data", "/social/imports", LineChart],
               ["Prompts", "/prompts", FileText],
               ["Recipes", "/automations/recipes", Library],
+              ["Workflow Audits", "/workflow-audits", Radar],
               ["Brand Context", "/brands", Library],
               ["Launchpad", "#launchpad", Link2],
             ].map(([label, href, Icon]) => (
@@ -213,12 +279,12 @@ export function SswDashboard({ brands, posts }: DashboardProps) {
           </div>
         </aside>
 
-        <main className="px-4 py-5 sm:px-6 lg:px-8">
+        <main className="min-w-0 px-4 py-5 sm:px-6 lg:px-8">
           <header className="flex flex-col gap-4 border-b border-stone-200 pb-5 xl:flex-row xl:items-center xl:justify-between">
             <div>
-              <h1 className="text-2xl font-semibold tracking-normal text-[#17211d]">Signal Workshop content command center</h1>
+              <h1 className="text-2xl font-semibold tracking-normal text-[#17211d]">Signal Workshop operating dashboard</h1>
               <p className="mt-1 max-w-3xl text-sm leading-6 text-stone-600">
-                Generate, review, export, and manually publish platform-native content without crossing the auto-publish line.
+                Review content, imports, approvals, workflow audits, and exports from the DB-backed business hub without crossing the auto-publish line.
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -229,40 +295,75 @@ export function SswDashboard({ brands, posts }: DashboardProps) {
                 <Sparkles size={16} />
                 Run Today
               </a>
-              <button
-                type="button"
-                onClick={() => downloadText("sswapp-review-pack.md", exportMarkdownReview(drafts))}
+              <a
+                href={`/api/exports/markdown${packExportQuery}`}
                 className="inline-flex items-center gap-2 rounded-md border border-stone-300 bg-white px-3 py-2 text-sm font-medium text-stone-800 hover:border-emerald-300"
               >
                 <FileText size={16} />
                 Review Pack
-              </button>
-              <button
-                type="button"
-                onClick={() => downloadText("sswapp-approved-posts.csv", stringifyPostsCsv(approvedOnly(drafts)), "text/csv")}
+              </a>
+              <a
+                href={`/api/exports/csv${packExportQuery}`}
                 className="inline-flex items-center gap-2 rounded-md border border-stone-300 bg-white px-3 py-2 text-sm font-medium text-stone-800 hover:border-emerald-300"
               >
                 <Download size={16} />
                 Approved CSV
-              </button>
-              <button
-                type="button"
-                onClick={() => downloadText("sswapp-image-prompts.json", exportImagePromptsJson(samplePack), "application/json")}
+              </a>
+              <a
+                href={`/api/exports/image-prompts${packExportQuery}`}
                 className="inline-flex items-center gap-2 rounded-md bg-[#1e6b4d] px-3 py-2 text-sm font-medium text-white hover:bg-[#195a41]"
               >
                 <ImageIcon size={16} />
                 Image JSON
-              </button>
-              <button
-                type="button"
-                onClick={() => downloadText("manifest.json", exportAssetManifestJson(samplePack), "application/json")}
+              </a>
+              <a
+                href={`/api/exports/asset-manifest${packExportQuery}`}
                 className="inline-flex items-center gap-2 rounded-md border border-stone-300 bg-white px-3 py-2 text-sm font-medium text-stone-800 hover:border-emerald-300"
               >
                 <FileText size={16} />
                 Manifest
-              </button>
+              </a>
             </div>
           </header>
+
+          <section className="grid gap-3 py-5 md:grid-cols-2 xl:grid-cols-4">
+            {operationalCards.map((card) => (
+              <div key={card.label} className={`rounded-lg border p-4 shadow-sm ${sourceTone[card.tone] || sourceTone.deterministic_fallback}`}>
+                <p className="text-xs font-semibold uppercase">{card.label}</p>
+                <p className="mt-2 text-2xl font-semibold">{card.value}</p>
+                <p className="mt-2 line-clamp-2 text-xs leading-5 opacity-80">{card.detail}</p>
+              </div>
+            ))}
+          </section>
+
+          <section className="mb-5 grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
+            <div className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
+              <h2 className="text-lg font-semibold">Operational Warnings</h2>
+              {dashboard.warnings.length ? (
+                <div className="mt-3 space-y-2">
+                  {dashboard.warnings.map((warning) => (
+                    <p key={warning} className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+                      {warning}
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900">
+                  Core dashboard dependencies are configured and the latest pack is loading from persisted records.
+                </p>
+              )}
+            </div>
+            <div className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
+              <h2 className="text-lg font-semibold">Next Actions</h2>
+              <div className="mt-3 space-y-2">
+                {dashboard.nextActions.slice(0, 4).map((action) => (
+                  <p key={action} className="rounded-md border border-stone-200 px-3 py-2 text-sm text-stone-700">
+                    {action}
+                  </p>
+                ))}
+              </div>
+            </div>
+          </section>
 
           <section id="today" className="grid gap-4 py-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(320px,0.75fr)]">
             <div className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
@@ -327,13 +428,41 @@ export function SswDashboard({ brands, posts }: DashboardProps) {
             </div>
           </section>
 
-          <section id="approval-queue" className="rounded-lg border border-stone-200 bg-white shadow-sm">
+          <section className="mb-5 rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h2 className="text-lg font-semibold">Weekly Workflow Gap Audit</h2>
+                <p className="mt-1 text-sm text-stone-600">
+                  {latestAudit
+                    ? `${latestAudit.readinessLevel} readiness, score ${latestAudit.overallHealthScore}, ${latestAudit.criticalCount} critical and ${latestAudit.highCount} high gaps.`
+                    : "No workflow audit has been run yet."}
+                </p>
+                {latestAudit?.summary ? <p className="mt-2 line-clamp-2 text-xs leading-5 text-stone-500">{latestAudit.summary}</p> : null}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Link href="/workflow-audits" className="inline-flex items-center gap-2 rounded-md bg-[#1e6b4d] px-3 py-2 text-sm font-medium text-white hover:bg-[#195a41]">
+                  <Radar size={16} />
+                  Audit Center
+                </Link>
+                {latestAudit ? (
+                  <Link href={`/workflow-audits/${latestAudit.id}`} className="inline-flex items-center gap-2 rounded-md border border-stone-300 bg-white px-3 py-2 text-sm font-medium text-stone-800 hover:border-emerald-300">
+                    View Latest
+                  </Link>
+                ) : null}
+              </div>
+            </div>
+          </section>
+
+          <section id="approval-queue" className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
             <div className="flex flex-col gap-2 border-b border-stone-200 p-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <h2 className="text-lg font-semibold">Approval Queue</h2>
                 <p className="text-sm text-stone-600">Every row remains manual-review first. Open links never publish.</p>
               </div>
-              <p className="text-sm text-stone-500">{reviewQueue.length} waiting for review</p>
+              <div className="max-w-md text-left md:text-right">
+                <p className="text-sm text-stone-500">{reviewQueue.length} waiting for review</p>
+                <p className="mt-1 text-xs leading-5 text-stone-500">{statusNote}</p>
+              </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[980px] text-left text-sm">
@@ -370,14 +499,14 @@ export function SswDashboard({ brands, posts }: DashboardProps) {
                           </IconButton>
                           <button
                             type="button"
-                            onClick={() => approvePost(post.id)}
+                            onClick={() => void updateDraftStatus(post.id, "approved")}
                             className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-800 hover:bg-emerald-100"
                           >
                             Approve
                           </button>
                           <button
                             type="button"
-                            onClick={() => markRevision(post.id)}
+                            onClick={() => void updateDraftStatus(post.id, "needs_revision")}
                             className="rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-xs font-medium text-amber-800 hover:bg-amber-100"
                           >
                             Revise
@@ -408,9 +537,9 @@ export function SswDashboard({ brands, posts }: DashboardProps) {
               <div className="mt-4 grid grid-cols-2 gap-3">
                 {[
                   ["Drafts", drafts.length],
+                  ["Needs Review", reviewQueue.length],
                   ["Approved", approvedCount],
-                  ["Platforms", seedPlatforms.length],
-                  ["Pillars", seedContentPillars.length],
+                  ["Snapshots", dashboard.socialSnapshotCount],
                 ].map(([label, value]) => (
                   <div key={String(label)} className="rounded-md border border-stone-200 p-3">
                     <p className="text-xs uppercase text-stone-500">{String(label)}</p>
@@ -419,6 +548,9 @@ export function SswDashboard({ brands, posts }: DashboardProps) {
                 ))}
               </div>
               <p className="mt-4 text-sm text-stone-600">Best current pillar: {report.bestPillars[0]?.pillar || "Waiting for metrics"}</p>
+              <p className="mt-2 text-xs text-stone-500">
+                Metrics source: {dashboard.socialSourceLabel}. Unresolved import issues: {dashboard.unresolvedImportIssueCount}.
+              </p>
             </div>
             <div id="prompts" className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
               <h2 className="text-lg font-semibold">Prompt Library</h2>
@@ -442,8 +574,8 @@ export function SswDashboard({ brands, posts }: DashboardProps) {
             <div className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
               <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold">Sample Daily Output</h2>
-                  <p className="text-sm text-stone-600">{samplePack.contentPack.dailyTheme}</p>
+                  <h2 className="text-lg font-semibold">Fallback Sample Daily Output</h2>
+                  <p className="text-sm text-stone-600">Reference pack for export format checks: {samplePack.contentPack.dailyTheme}</p>
                 </div>
                 <StatusPill status={samplePack.contentPack.status} />
               </div>
@@ -478,8 +610,8 @@ export function SswDashboard({ brands, posts }: DashboardProps) {
               </div>
             </div>
             <div className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
-              <h2 className="text-lg font-semibold">Metrics Feedback Loop</h2>
-              <p className="mt-1 text-sm text-stone-600">Manual metrics become weekly recommendations before the next generation run.</p>
+              <h2 className="text-lg font-semibold">Sample Metrics Feedback Loop</h2>
+              <p className="mt-1 text-sm text-stone-600">Deterministic sample recommendations stay visible until confirmed social imports take over.</p>
               <div className="mt-4 space-y-2 text-sm">
                 {exportWeeklyReportMarkdown(sampleMetrics, samplePack.postDrafts)
                   .split("\n")
