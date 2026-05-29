@@ -13,12 +13,10 @@ import {
   Link2,
   Megaphone,
   Play,
-  Radar,
   Send,
   Sparkles,
   TableProperties,
 } from "lucide-react";
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { DashboardSnapshot } from "@/lib/dashboard-data";
 import type { Brand, GeneratedPost, PostVariant } from "@/lib/types";
@@ -35,16 +33,6 @@ type DashboardProps = {
   brands: Brand[];
   posts: PostVariant[];
   dashboard: DashboardSnapshot;
-  latestAudit?: {
-    id: string;
-    auditDate: string;
-    readinessLevel: string;
-    overallHealthScore: number;
-    totalGaps: number;
-    criticalCount: number;
-    highCount: number;
-    summary: string;
-  } | null;
 };
 
 const sourceTone: Record<string, string> = {
@@ -120,7 +108,7 @@ function IconButton({
   );
 }
 
-export function SswDashboard({ brands, posts, dashboard, latestAudit }: DashboardProps) {
+export function SswDashboard({ brands, posts, dashboard }: DashboardProps) {
   const [activeBrand, setActiveBrand] = useState(brands[0]?.slug || "signal-workshop");
   const [drafts, setDrafts] = useState<PostVariant[]>(posts);
   const [theme, setTheme] = useState("Signal over noise");
@@ -246,7 +234,6 @@ export function SswDashboard({ brands, posts, dashboard, latestAudit }: Dashboar
               ["Social Data", "/social/imports", LineChart],
               ["Prompts", "/prompts", FileText],
               ["Recipes", "/automations/recipes", Library],
-              ["Workflow Audits", "/workflow-audits", Radar],
               ["Brand Context", "/brands", Library],
               ["Launchpad", "#launchpad", Link2],
             ].map(([label, href, Icon]) => (
@@ -424,31 +411,6 @@ export function SswDashboard({ brands, posts, dashboard, latestAudit }: Dashboar
                     </div>
                   </div>
                 ))}
-              </div>
-            </div>
-          </section>
-
-          <section className="mb-5 rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <div>
-                <h2 className="text-lg font-semibold">Weekly Workflow Gap Audit</h2>
-                <p className="mt-1 text-sm text-stone-600">
-                  {latestAudit
-                    ? `${latestAudit.readinessLevel} readiness, score ${latestAudit.overallHealthScore}, ${latestAudit.criticalCount} critical and ${latestAudit.highCount} high gaps.`
-                    : "No workflow audit has been run yet."}
-                </p>
-                {latestAudit?.summary ? <p className="mt-2 line-clamp-2 text-xs leading-5 text-stone-500">{latestAudit.summary}</p> : null}
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Link href="/workflow-audits" className="inline-flex items-center gap-2 rounded-md bg-[#1e6b4d] px-3 py-2 text-sm font-medium text-white hover:bg-[#195a41]">
-                  <Radar size={16} />
-                  Audit Center
-                </Link>
-                {latestAudit ? (
-                  <Link href={`/workflow-audits/${latestAudit.id}`} className="inline-flex items-center gap-2 rounded-md border border-stone-300 bg-white px-3 py-2 text-sm font-medium text-stone-800 hover:border-emerald-300">
-                    View Latest
-                  </Link>
-                ) : null}
               </div>
             </div>
           </section>
