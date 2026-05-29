@@ -10,8 +10,22 @@ import { isDatabaseConfigured, listCalendarDrafts } from "@/lib/db-operational";
 
 export const dynamic = "force-dynamic";
 
+async function getCalendarDraftsSafely() {
+  if (!isDatabaseConfigured()) {
+    return { drafts: null, warning: "Database is not configured; showing deterministic sample content drafts." };
+  }
+  try {
+    return { drafts: await listCalendarDrafts(), warning: "" };
+  } catch {
+    return {
+      drafts: null,
+      warning: "Database calendar reads are unavailable in this deployment; showing deterministic sample content drafts.",
+    };
+  }
+}
+
 export default async function CalendarPage() {
-  const dbDrafts = isDatabaseConfigured() ? await listCalendarDrafts() : null;
+  const { drafts: dbDrafts, warning: calendarWarning } = await getCalendarDraftsSafely();
   const pack = dbDrafts ? null : createSampleDailyContentPack();
   const drafts =
     dbDrafts?.map((draft) => ({
@@ -46,6 +60,10 @@ export default async function CalendarPage() {
             </div>
             <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-900">read-only v1</span>
           </div>
+
+          {calendarWarning ? (
+            <p className="mt-4 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">{calendarWarning}</p>
+          ) : null}
 
           <div className="mt-4 space-y-3">
             {businessEvents.map((event) => (
