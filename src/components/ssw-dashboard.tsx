@@ -11,13 +11,14 @@ import {
   LineChart,
   Library,
   Link2,
-  Megaphone,
   Play,
   Send,
   Sparkles,
   TableProperties,
 } from "lucide-react";
+import Image from "next/image";
 import { useMemo, useState } from "react";
+import { signalWorkshopAssets } from "@/lib/brand-assets";
 import type { DashboardSnapshot } from "@/lib/dashboard-data";
 import type { Brand, GeneratedPost, PostVariant } from "@/lib/types";
 import { getLaunchUrl, weeklyReport } from "@/lib/content-engine";
@@ -154,6 +155,7 @@ export function SswDashboard({ brands, posts, dashboard }: DashboardProps) {
   ];
 
   const socialLinks = useMemo(() => activeBrandData?.socialProfiles || [], [activeBrandData]);
+  const heroAsset = signalWorkshopAssets.studioDashboardMockup;
 
   async function generatePack() {
     setGenerationNote("Generating review-ready pack...");
@@ -215,8 +217,15 @@ export function SswDashboard({ brands, posts, dashboard }: DashboardProps) {
       <div className="grid min-h-screen lg:grid-cols-[248px_1fr]">
         <aside className="border-r border-stone-200 bg-[#15211b] px-4 py-5 text-stone-100">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-lg bg-emerald-300 text-[#15211b]">
-              <Megaphone size={20} />
+            <div className="flex size-11 items-center justify-center rounded-lg bg-white p-1.5 shadow-sm">
+              <Image
+                src={signalWorkshopAssets.swMonogram.src}
+                alt={signalWorkshopAssets.swMonogram.alt}
+                width={44}
+                height={44}
+                className="h-full w-full object-contain"
+                priority
+              />
             </div>
             <div>
               <p className="text-sm font-semibold">SSWApp</p>
@@ -268,11 +277,23 @@ export function SswDashboard({ brands, posts, dashboard }: DashboardProps) {
 
         <main className="min-w-0 px-4 py-5 sm:px-6 lg:px-8">
           <header className="flex flex-col gap-4 border-b border-stone-200 pb-5 xl:flex-row xl:items-center xl:justify-between">
-            <div>
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+              <div className="flex h-24 w-full max-w-[280px] items-center justify-center rounded-lg border border-stone-200 bg-white p-3 shadow-sm">
+                <Image
+                  src={signalWorkshopAssets.primaryLogo.src}
+                  alt={signalWorkshopAssets.primaryLogo.alt}
+                  width={280}
+                  height={180}
+                  className="h-full w-full object-contain"
+                  priority
+                />
+              </div>
+              <div>
               <h1 className="text-2xl font-semibold tracking-normal text-[#17211d]">Signal Workshop operating dashboard</h1>
               <p className="mt-1 max-w-3xl text-sm leading-6 text-stone-600">
                 Review content, imports, approvals, workflow audits, and exports from the DB-backed business hub without crossing the auto-publish line.
               </p>
+              </div>
             </div>
             <div className="flex flex-wrap gap-2">
               <a
@@ -312,6 +333,42 @@ export function SswDashboard({ brands, posts, dashboard }: DashboardProps) {
               </a>
             </div>
           </header>
+
+          <section className="mt-5 overflow-hidden rounded-lg border border-stone-200 bg-[#14211c] shadow-sm">
+            <div className="grid min-h-[260px] gap-0 lg:grid-cols-[minmax(0,0.9fr)_minmax(360px,1.1fr)]">
+              <div className="flex flex-col justify-between gap-6 p-5 text-white sm:p-6">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-200">Private command surface</p>
+                  <h2 className="mt-3 max-w-xl text-2xl font-semibold tracking-normal sm:text-3xl">Good work deserves a better signal.</h2>
+                  <p className="mt-3 max-w-xl text-sm leading-6 text-stone-200">
+                    The dashboard stays focused on review queues, imports, approvals, and operational next steps. The imagery is brand context; persisted data remains the source of truth.
+                  </p>
+                </div>
+                <div className="grid gap-2 text-sm sm:grid-cols-3">
+                  {[
+                    ["Source", dashboard.contentSourceLabel],
+                    ["Approvals", `${dashboard.pendingApprovalCount} pending`],
+                    ["Metrics", dashboard.socialSourceLabel],
+                  ].map(([label, value]) => (
+                    <div key={label} className="rounded-md border border-white/10 bg-white/10 p-3">
+                      <p className="text-xs uppercase text-stone-300">{label}</p>
+                      <p className="mt-1 font-semibold text-white">{value}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="relative min-h-[240px] border-t border-white/10 bg-stone-950 lg:border-l lg:border-t-0">
+                <Image
+                  src={heroAsset.src}
+                  alt={heroAsset.alt}
+                  fill
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            </div>
+          </section>
 
           <section className="grid gap-3 py-5 md:grid-cols-2 xl:grid-cols-4">
             {operationalCards.map((card) => (
