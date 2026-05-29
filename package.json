@@ -9,8 +9,16 @@
     "lint": "eslint",
     "typecheck": "node scripts/typecheck.mjs",
     "test": "tsx --test tests/*.test.ts",
+    "test:unit": "tsx --test tests/*.test.ts",
+    "test:integration": "tsx --test tests/*.integration.test.ts",
+    "test:operational": "tsx --test tests/*.operational.test.ts",
+    "test:load:smoke": "node scripts/load-smoke.mjs",
+    "test:all": "npm run test && npm run test:operational && npm run lint && npm run typecheck && npm run prisma:validate && npm run build",
     "prisma:generate": "node scripts/prisma-generate.mjs",
     "prisma:validate": "node scripts/prisma-validate.mjs",
+    "prisma:migrate:deploy": "node scripts/prisma-migrate-deploy.mjs",
+    "health:local": "node scripts/health-local.mjs",
+    "stress:local": "node scripts/full-spectrum-stress-test.mjs",
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {

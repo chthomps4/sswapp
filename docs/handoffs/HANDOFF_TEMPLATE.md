@@ -1,0 +1,37 @@
+# Handoff: [Short Title]
+
+- Handoff ID:
+- Date:
+- From:
+- To:
+- Requested by:
+- Related task ID:
+- Related project:
+- Priority:
+- Status:
+- Deadline status:
+- Due date:
+- Check-in date:
+- Review due date:
+- Blocker status:
+- Blocking person/role:
+- CEO action needed? yes/no
+- CEO action needed by:
+- Fred escalation needed? yes/no
+- Fred escalation date:
+- Seth research needed? yes/no
+- Exact Seth research needed:
+- Seth research needed by:
+- Summary:
+- Work completed:
+- Files changed:
+- Decisions made:
+- Decisions needed from Fred:
+- Decisions needed from CEO/Owner:
+- Risks:
+- Tests/checks run:
+- Tests/checks skipped and why:
+- Acceptance criteria:
+- Next action:
+- Next reviewer:
+- Archive when complete? yes/no

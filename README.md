@@ -61,6 +61,10 @@ ENABLE_AUTO_PUBLISHING=false
 ENABLE_AI_METRIC_ANALYSIS=false
 ENABLE_SOCIAL_API_IMPORTS=false
 SOCIAL_IMPORT_MAX_BYTES=5242880
+CRON_SECRET=
+ENABLE_WEEKLY_WORKFLOW_GAP_AUDIT=false
+WEEKLY_WORKFLOW_AUDIT_CRON_ENABLED=false
+ENABLE_AI_WORKFLOW_AUDIT_SUMMARY=false
 ```
 
 For Neon + Prisma, use the pooled connection for `DATABASE_URL` and the direct connection for `DIRECT_URL`.
@@ -112,6 +116,17 @@ Raw imports are private and are not sent to AI providers. AI metric summaries an
 - Clerk protects private pages and APIs when Clerk env vars are configured. `/api/health`, `/sign-in`, `/sign-up`, and Clerk's `/__clerk` frontend API route remain public enough for the sign-in flow to complete.
 - Production owner access should include `OWNER_EMAILS=chthomps84@gmail.com,chad@lswdesigns.studio` unless the CEO/Owner changes the authorized account list.
 
+## Weekly Workflow Gap Audit
+
+SSWApp includes a weekly operations smoke alarm for stalled packs, stale approvals, failed automation runs, import/export gaps, missing metrics, and safety boundary issues.
+
+- Manual page: `/workflow-audits`
+- Gap queue: `/workflow-gaps`
+- Cron endpoint: `/api/cron/workflow-gap-audit`
+- Markdown export: `/api/workflow-audits/[id]/export`
+
+The audit is deterministic/rule-based by default. It creates persistent audit, gap, action item, and checkpoint records. It does not auto-fix, auto-approve, auto-publish, or send raw dashboard rows to AI. Vercel Cron is configured for Monday 10:30 UTC and requires `CRON_SECRET`, `ENABLE_WEEKLY_WORKFLOW_GAP_AUDIT=true`, and `WEEKLY_WORKFLOW_AUDIT_CRON_ENABLED=true`.
+
 ## Automation Prompt Library
 
 SSWApp includes a versioned prompt library for daily packs, brand selection, platform posts, image prompts, carousels, short video scripts, Reddit discussions, Google Business Profile posts, newsletters, rewrites, approval summaries, dashboard analysis, metrics insights, repurposing, campaign planning, site-audit-to-content, monthly maps, and quality checks.
@@ -133,6 +148,8 @@ npm.cmd run lint
 npm.cmd run typecheck
 npm.cmd run prisma:validate
 npm.cmd run build
+npm.cmd run test:operational
+npm.cmd run stress:local
 ```
 
 ## Brands Seeded
@@ -148,4 +165,6 @@ Full operating notes are in [docs/social-content-engine.md](docs/social-content-
 Social dashboard import notes are in [docs/social-dashboard-data-processing.md](docs/social-dashboard-data-processing.md).
 Automation prompt notes are in [docs/automation-prompt-library.md](docs/automation-prompt-library.md).
 Automation workflow notes are in [docs/automation-workflows.md](docs/automation-workflows.md).
+Weekly workflow audit notes are in [docs/weekly-workflow-gap-audit.md](docs/weekly-workflow-gap-audit.md).
+Operational readiness notes are in [docs/operational-readiness-report.md](docs/operational-readiness-report.md).
 Codex automation setup prompts are in [docs/codex-automation-setup-prompts.md](docs/codex-automation-setup-prompts.md).

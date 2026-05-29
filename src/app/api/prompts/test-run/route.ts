@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
+import { requireOwnerResponse } from "@/lib/auth";
 import { renderPrompt } from "@/lib/prompts/renderPrompt";
 
 export async function POST(request: Request) {
+  const denied = await requireOwnerResponse();
+  if (denied) return denied;
   const input = await request.json();
   if (process.env.ENABLE_AI_CONTENT_GENERATION !== "true") {
     return NextResponse.json({

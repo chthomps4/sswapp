@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
+import { requireOwnerResponse } from "@/lib/auth";
 
 export async function PATCH(request: Request, context: { params: Promise<{ id: string; rowId: string }> }) {
+  const denied = await requireOwnerResponse();
+  if (denied) return denied;
   const { id, rowId } = await context.params;
   const json = await request.json().catch(() => ({}));
   const action = String(json.action || "manual_match");

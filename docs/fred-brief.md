@@ -14,6 +14,7 @@
 | High | Gary local repository and asset centralization | Gary | ready_for_fred | due_soon | none | Review Linear `SIG-37`, `C:\signal_workshop\signal-workshop-report.txt`, and decide whether Sara audit is needed |
 | High | Slack + Linear + Codex delegation system | Jeff | ready_for_fred | due_soon | none | Review SIG-21, SIG-26, and Jeff's handoff; decide whether to pilot manually |
 | High | AI workflow setup service and sample workshop | Fred / Seth / Jeff | draft | due_soon | pending Fred/CEO approval before public use | Review SIG-20 and decide whether Seth researches the opportunity and Ed drafts the workshop workflow |
+| High | Rachel Fred assistant coverage | Rachel (for Fred) | in_progress | due_soon | none | Keep routing deterministic while Fred is busy, then hand back all meaningful tasks through handoff log and task queue discipline |
 
 ## Deadline Dashboard
 
@@ -24,6 +25,7 @@
 - Due soon: Gary local repository and asset centralization in `SIG-37` is ready for Fred review on 2026-05-29.
 - Due soon: Slack + Linear + Codex delegation system is ready for Fred review on 2026-05-29.
 - Due soon: AI workflow setup service/sample workshop draft needs Fred routing before Seth/Ed/Sara work begins.
+- Due soon: Rachel assistant relay begins on 2026-05-29. All routed items must have blocker/deadline fields, explicit next action, and handoff link; labels `manual-first`, `no-auto-approval`, `fred-review` must be applied to SIG-55 child routing.
 - At risk: SiteSignal domain-tier work if Seth research does not return before implementation planning resumes.
 - Overdue: none documented.
 - Blocked by CEO/Owner: none documented.
@@ -46,5 +48,6 @@
 - Review Gary's local asset centralization handoff and Linear `SIG-37`; decide whether Sara should audit the new `C:\signal_workshop` root for workspace efficiency.
 - Review Slack + Linear + Codex delegation handoff and decide whether to pilot the manual-first `#command` intake workflow.
 - Review the AI workflow setup service/sample workshop draft and decide whether Seth should research market/pricing and Ed should refine the workshop workflow through Jeff.
+- Stand up Rachel lead coverage for Fred: use `SSW-TASK-0011`, keep all meaningful tasks explicit on Linear docs handoff logs, and require routing notes to include mandatory metadata.
 - Decide whether to ask Sara for a workspace efficiency audit after install.
 - Keep SiteSignal domain-tier work parked until Seth research is available.

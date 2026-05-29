@@ -1,0 +1,37 @@
+# Handoff: Slack Linear Codex Delegation System
+
+- Handoff ID: SSW-HANDOFF-2026-05-29-JEFF-DELEGATION
+- Date: 2026-05-29
+- From: Jeff
+- To: Fred
+- Requested by: CEO/Owner
+- Related task ID: SSW-TASK-0007, SSW-TASK-0008
+- Related project: SSWApp / Business Hub
+- Priority: High
+- Status: ready_for_fred
+- Deadline status: due_soon
+- Due date: 2026-05-29
+- Check-in date: 2026-05-29
+- Review due date: 2026-05-29
+- Blocker status: clear
+- Blocking person/role: none
+- CEO action needed? yes
+- CEO action needed by: before public offer, pricing, or live integration approval
+- Fred escalation needed? yes
+- Fred escalation date: 2026-05-29
+- Seth research needed? yes
+- Exact Seth research needed: Market, competitor, pricing, and tool/vendor review for AI workflow setup services and sample workshop positioning.
+- Seth research needed by: after Fred accepts the opportunity lane
+- Summary: CEO/Owner asked Jeff to take on the Slack + Linear + Codex delegation project and added a business-model idea to use the internal SSWApp workflow system as a living example of AI workflow setup for businesses.
+- Work completed: Added manual-first intake/delegation docs, Codex playbook, Slack intake log, business-model draft, sample workshop draft, task queue entries, and Linear updates for SIG-21, SIG-26, and SIG-20.
+- Files changed: docs/automation-prompts/slack-command-intake-sweep.md; docs/automation-prompts/codex-task-delegation.md; docs/slack-command-intake-log.md; docs/codex-playbook.md; docs/business-model-ai-workflow-services.md; docs/sample-workshop-ai-workflow-setup.md; docs/product-opportunities.md; docs/automation-map.md; docs/business-hub-functional-readiness-map.md; docs/project-registry.md; docs/tool-stack-recommendations.md; docs/handoff-protocol.md; docs/fred-brief.md; docs/task-queue.md; docs/chat-handoff-log.md; docs/handoffs/INDEX.md.
+- Decisions made: Slack remains intake-only. Linear and repo docs remain durable source of truth. Codex is a review-ready draft worker only. No live bridge, paid tool, deployment, publishing, or approval automation was enabled.
+- Decisions needed from Fred: Accept the manual-first delegation workflow, decide whether Ed should refine the workflow map, decide whether Seth should research the service offer, and decide whether Sara should audit client-facing claims before any public workshop materials.
+- Decisions needed from CEO/Owner: Approve or revise business model, pricing, launch posture, and any paid tool commitments after Fred review.
+- Risks: Live Slack/Linear/Codex bridges could create noisy or duplicate tasks if enabled before the manual workflow proves useful. Public service claims could overpromise if Sara has not audited boundaries.
+- Tests/checks run: `rg "Slack|#command|Codex|Linear|delegation|AI workflow|sample workshop" docs CODEX_TEAM_BOOTSTRAP.md AGENTS.md`
+- Tests/checks skipped and why: npm tests skipped because this is documentation/tracker-only work.
+- Acceptance criteria: SIG-21 and SIG-26 reference the delegation workflow, the business-model idea is discoverable from docs and task queue, and no app source code/schema/tests/deployments/publishing behavior changed.
+- Next action: Fred reviews SIG-21, SIG-26, SIG-20, and this handoff.
+- Next reviewer: Fred
+- Archive when complete? yes, after Fred accepts or revises the workflow.

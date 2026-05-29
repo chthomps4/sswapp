@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
+import { requireOwnerResponse } from "@/lib/auth";
 import { renderPrompt, validatePromptVariables } from "@/lib/prompts/renderPrompt";
 
 export async function POST(request: Request) {
+  const denied = await requireOwnerResponse();
+  if (denied) return denied;
   try {
     const input = await request.json();
     const missingVariables = validatePromptVariables(input.promptKey, input.variables || {});

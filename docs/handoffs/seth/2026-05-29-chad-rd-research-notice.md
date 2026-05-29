@@ -1,0 +1,38 @@
+# Handoff: Chad R&D Research Packet Notice
+
+- Handoff ID: SSW-HANDOFF-SETH-2026-05-29-001
+- Date: 2026-05-29
+- From: Seth
+- To: Fred
+- Requested by: Chad / CEO-Owner
+- Related task ID: SSW-TASK-0004
+- Related Linear issue: SIG-30
+- Related project: SiteSignalCo Command Center
+- Priority: High
+- Status: ready_for_fred
+- Deadline status: due_soon
+- Due date: 2026-05-29
+- Check-in date: 2026-05-29
+- Review due date: 2026-05-29
+- Blocker status: clear
+- Blocking person/role: none
+- CEO action needed? no
+- CEO action needed by: n/a
+- Fred escalation needed? no
+- Fred escalation date: n/a
+- Seth research needed? pending Fred decision
+- Exact Seth research needed: Chad sent Seth a research packet covering SiteSignal-like tools, AI-visibility monitoring, traditional website/SEO/accessibility audit tools, and recommendations for modernizing the Signal Workshop business OS / all-in-one command center.
+- Seth research needed by: pending Fred decision
+- Summary: Chad asked Seth to route the research packet to Fred and let Fred decide the next action.
+- Work completed: Created Linear `SIG-30` under `SIG-22`, related it to `SIG-25` and `SIG-17`, updated Fred brief, task queue, chat handoff log, and handoff index.
+- Files changed: `docs/fred-brief.md`, `docs/task-queue.md`, `docs/chat-handoff-log.md`, `docs/handoffs/INDEX.md`, `docs/handoffs/seth/2026-05-29-chad-rd-research-notice.md`.
+- Decisions made: This is a Fred decision notice, not implementation approval.
+- Decisions needed from Fred: Decide whether Seth should turn the packet into a full R&D brief, route vendor evaluation to `SIG-17`, attach the research to `SIG-22`/`SIG-25`, or park it until current command-center work clears.
+- Decisions needed from CEO/Owner: none at this stage.
+- Risks: Tool/vendor research can create budget or subscription decisions; those must route to Fred as `CEO ACTION REQUIRED` before any paid commitment.
+- Tests/checks run: Markdown/table structure inspection after updates.
+- Tests/checks skipped and why: App tests were skipped because this is a Linear notification and documentation-only handoff.
+- Acceptance criteria: Fred has a Linear notification, repo handoff, Fred brief item, and task-queue entry; no vendor purchases, implementation tasks, or production changes were made.
+- Next action: Fred review of `SIG-30`.
+- Next reviewer: Fred
+- Archive when complete? yes

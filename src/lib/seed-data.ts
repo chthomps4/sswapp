@@ -112,7 +112,7 @@ const brandMeta: Record<
   sitesignal: {
     businessType: "Website audit and lead diagnostic tool",
     description: "Website improvement signals and client opportunity diagnostics.",
-    websiteUrl: "https://sitesignal.signalworkshop.studio",
+    websiteUrl: "https://sitesignal.company",
     primaryColor: "#29627d",
     secondaryColor: "#0f1720",
     accentColor: "#82c6a0",
@@ -120,11 +120,11 @@ const brandMeta: Record<
     socialProfiles: [
       {
         platform: "Website",
-        handle: "sitesignal.signalworkshop.studio",
-        profileUrl: "https://sitesignal.signalworkshop.studio",
-        composerUrl: "https://sitesignal.signalworkshop.studio/studio",
-        adminUrl: "https://vercel.com/",
-        notes: "Use for audit-product launches and diagnostics.",
+        handle: "sitesignal.company",
+        profileUrl: "https://sitesignal.company",
+        composerUrl: "https://sitesignal.company",
+        adminUrl: "https://sitesignal.company",
+        notes: "Primary SiteSignal dashboard and diagnostic product URL.",
       },
     ],
   },

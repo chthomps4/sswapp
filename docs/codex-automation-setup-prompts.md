@@ -412,6 +412,43 @@ Output:
 Shared rules apply.
 ```
 
+## Automation 12: Team Training Digest
+
+Suggested schedule: Weekly after any major training packet or every Monday.
+
+Prompt:
+
+```text
+Run the Codex team training digest.
+
+Use these rules:
+- Distill one focused training theme from the latest docs or issue context.
+- Keep everything review-safe and actionable.
+- Include repository and file/module targets for each recommendation.
+- Include a clear owner and acceptance criterion for every task.
+
+Inputs:
+- Linear issue `SIG-55` and any active training-related comments
+- `docs/codex-playbook.md`
+- `docs/automation-prompts/codex-task-delegation.md`
+- `docs/automation-prompts/codex-team-training-digest.md`
+- `docs/task-queue.md`
+
+Output:
+- One short digest summary
+- 4 implementation-ready actions
+- For each action: owner, repo/files, expected behavior, acceptance criterion
+- Any blockers, missing inputs, or approval boundaries
+
+Safety rules:
+- Do not purchase tools or subscribe services.
+- Do not make production changes.
+- Do not auto-approve or auto-assign final execution.
+- Flag any ambiguity as "blocked: needs clarification."
+
+Shared rules apply.
+```
+
 ## Recommended First Automation Set
 
 Start with:
@@ -423,3 +460,4 @@ Start with:
 5. Prompt Quality Review
 
 Add the campaign/monthly/site-audit automations after the first week of real generated packs and imported metrics.
+12. Use Codex Team Training Digest when you need to keep the team aligned and implementation-ready after training sessions.

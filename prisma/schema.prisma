@@ -54,6 +54,7 @@ enum AutomationType {
   DAILY_CONTENT_PACK    @map("daily_content_pack")
   IMAGE_PROMPT_BATCH    @map("image_prompt_batch")
   WEEKLY_RESEARCH_BRIEF @map("weekly_research_brief")
+  WEEKLY_WORKFLOW_GAP_AUDIT @map("weekly_workflow_gap_audit")
   WEEKLY_SOCIAL_ANALYSIS @map("weekly_social_analysis")
   PERFORMANCE_CONTEXT_REFRESH @map("performance_context_refresh")
   REPURPOSE_WINNING_POST @map("repurpose_winning_post")
@@ -72,7 +73,62 @@ enum AutomationStatus {
   QUEUED    @map("queued")
   RUNNING   @map("running")
   SUCCEEDED @map("succeeded")
+  PARTIAL   @map("partial")
   FAILED    @map("failed")
+}
+
+enum WorkflowAuditStatus {
+  RUNNING                 @map("running")
+  COMPLETED               @map("completed")
+  COMPLETED_WITH_WARNINGS @map("completed_with_warnings")
+  FAILED                  @map("failed")
+  PARTIAL                 @map("partial")
+}
+
+enum WorkflowAuditTriggerType {
+  MANUAL         @map("manual")
+  SCHEDULED      @map("scheduled")
+  CRON           @map("cron")
+  GITHUB_ACTIONS @map("github_actions")
+  POST_DEPLOY    @map("post_deploy")
+  TEST           @map("test")
+}
+
+enum WorkflowReadinessLevel {
+  GREEN  @map("green")
+  YELLOW @map("yellow")
+  RED    @map("red")
+}
+
+enum WorkflowGapSeverity {
+  CRITICAL @map("critical")
+  HIGH     @map("high")
+  MEDIUM   @map("medium")
+  LOW      @map("low")
+}
+
+enum WorkflowGapStatus {
+  NEW               @map("new")
+  REVIEWED          @map("reviewed")
+  ACCEPTED          @map("accepted")
+  IN_PROGRESS       @map("in_progress")
+  RESOLVED          @map("resolved")
+  IGNORED           @map("ignored")
+  CONVERTED_TO_TASK @map("converted_to_task")
+}
+
+enum WorkflowGapActionStatus {
+  OPEN        @map("open")
+  IN_PROGRESS @map("in_progress")
+  DONE        @map("done")
+  IGNORED     @map("ignored")
+}
+
+enum WorkflowAuditCheckpointStatus {
+  PASSED  @map("passed")
+  WARNING @map("warning")
+  FAILED  @map("failed")
+  SKIPPED @map("skipped")
 }
 
 enum AutomationRecipeTriggerType {
@@ -204,6 +260,7 @@ model Brand {
   dailyRollups     SocialMetricDailyRollup[]
   performanceInsights SocialPerformanceInsight[]
   socialBenchmarks SocialBenchmark[]
+  workflowGaps     WorkflowGap[]
 }
 
 model SocialProfile {
@@ -245,6 +302,7 @@ model Platform {
   dailyRollups     SocialMetricDailyRollup[]
   performanceInsights SocialPerformanceInsight[]
   socialBenchmarks SocialBenchmark[]
+  workflowGaps     WorkflowGap[]
 }
 
 model ContentPillar {
@@ -795,6 +853,7 @@ model AutomationRun {
   completedAt     DateTime?
   createdAt       DateTime             @default(now())
   recipeRun       AutomationRecipeRun? @relation(fields: [recipeRunId], references: [id], onDelete: SetNull)
+  workflowGapAudits WorkflowGapAudit[]
 }
 
 model AutomationRecipe {
@@ -827,6 +886,109 @@ model AutomationRecipeRun {
   createdAt          DateTime         @default(now())
   recipe             AutomationRecipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   automationRuns     AutomationRun[]
+}
+
+model WorkflowGapAudit {
+  id                 String                   @id @default(cuid())
+  auditDate          DateTime
+  dateRangeStart     DateTime
+  dateRangeEnd       DateTime
+  status             WorkflowAuditStatus      @default(RUNNING)
+  triggerType        WorkflowAuditTriggerType @default(MANUAL)
+  summary            String?
+  overallHealthScore Int                      @default(0)
+  readinessLevel     WorkflowReadinessLevel   @default(YELLOW)
+  totalGaps          Int                      @default(0)
+  criticalCount      Int                      @default(0)
+  highCount          Int                      @default(0)
+  mediumCount        Int                      @default(0)
+  lowCount           Int                      @default(0)
+  resolvedCount      Int                      @default(0)
+  ignoredCount       Int                      @default(0)
+  automationRunId    String?
+  inputJson          Json?
+  outputJson         Json?
+  error              String?
+  startedAt          DateTime?
+  completedAt        DateTime?
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
+  automationRun      AutomationRun?           @relation(fields: [automationRunId], references: [id], onDelete: SetNull)
+  gaps               WorkflowGap[]
+  actionItems        WorkflowGapActionItem[]
+  checkpoints        WorkflowAuditCheckpoint[]
+
+  @@index([auditDate, status])
+  @@index([readinessLevel, completedAt])
+}
+
+model WorkflowGap {
+  id                 String              @id @default(cuid())
+  auditId            String
+  category           String
+  severity           WorkflowGapSeverity
+  title              String
+  description        String
+  evidenceJson       Json?
+  affectedEntityType String?
+  affectedEntityId   String?
+  affectedBrandId    String?
+  affectedPlatformId String?
+  recommendation     String
+  suggestedOwner     String?
+  suggestedDueDate   DateTime?
+  status             WorkflowGapStatus   @default(NEW)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  audit              WorkflowGapAudit    @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  affectedBrand      Brand?              @relation(fields: [affectedBrandId], references: [id], onDelete: SetNull)
+  affectedPlatform   Platform?           @relation(fields: [affectedPlatformId], references: [id], onDelete: SetNull)
+  actionItems        WorkflowGapActionItem[]
+
+  @@index([auditId, severity, status])
+  @@index([category, status])
+  @@index([affectedEntityType, affectedEntityId])
+}
+
+model WorkflowGapActionItem {
+  id                String                  @id @default(cuid())
+  gapId             String
+  auditId           String
+  title             String
+  description       String
+  priority          WorkflowGapSeverity
+  status            WorkflowGapActionStatus @default(OPEN)
+  linkedEntityType  String?
+  linkedEntityId    String?
+  recommendedAction String
+  dueDate           DateTime?
+  completedAt       DateTime?
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+  gap               WorkflowGap             @relation(fields: [gapId], references: [id], onDelete: Cascade)
+  audit             WorkflowGapAudit        @relation(fields: [auditId], references: [id], onDelete: Cascade)
+
+  @@index([auditId, status, priority])
+  @@index([linkedEntityType, linkedEntityId])
+}
+
+model WorkflowAuditCheckpoint {
+  id             String                         @id @default(cuid())
+  auditId        String
+  checkpointKey  String
+  checkpointName String
+  category       String
+  status         WorkflowAuditCheckpointStatus
+  summary        String
+  recordsChecked Int                            @default(0)
+  gapsFound      Int                            @default(0)
+  durationMs     Int                            @default(0)
+  error          String?
+  createdAt      DateTime                       @default(now())
+  audit          WorkflowGapAudit               @relation(fields: [auditId], references: [id], onDelete: Cascade)
+
+  @@index([auditId, checkpointKey])
+  @@index([status, category])
 }
 
 model PromptTemplate {

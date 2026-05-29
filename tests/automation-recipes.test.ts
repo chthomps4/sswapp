@@ -15,7 +15,8 @@ import {
 test("seeded automation recipes are manual and safe by default", () => {
   const recipes = getAutomationRecipes();
   assert.ok(recipes.some((recipe) => recipe.slug === "run-today"));
-  assert.ok(recipes.every((recipe) => recipe.triggerType === "manual"));
+  assert.ok(recipes.every((recipe) => recipe.triggerType === "manual" || recipe.slug === "weekly-workflow-gap-audit"));
+  assert.equal(recipes.find((recipe) => recipe.slug === "weekly-workflow-gap-audit")?.defaultSettingsJson.scheduledEnabled, false);
   assert.ok(recipes.every((recipe) => JSON.stringify(recipe.featureFlagsJson).includes("false") || JSON.stringify(recipe.featureFlagsJson).includes("blocked") || recipe.slug === "image-prompt-batch" || recipe.slug === "weekly-social-analysis"));
 });
 

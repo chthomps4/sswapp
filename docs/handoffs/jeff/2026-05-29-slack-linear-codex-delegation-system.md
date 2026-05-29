@@ -1,0 +1,37 @@
+# Handoff: Jeff Delegation System Setup
+
+- Handoff ID: SSW-HANDOFF-2026-05-29-JEFF-WORKFLOW
+- Date: 2026-05-29
+- From: Jeff
+- To: Jeff / Ed
+- Requested by: CEO/Owner
+- Related task ID: SSW-TASK-0007
+- Related project: SSWApp / Business Hub
+- Priority: High
+- Status: ready_for_fred
+- Deadline status: due_soon
+- Due date: 2026-05-29
+- Check-in date: 2026-05-29
+- Review due date: 2026-05-29
+- Blocker status: clear
+- Blocking person/role: none
+- CEO action needed? no
+- CEO action needed by: n/a
+- Fred escalation needed? yes
+- Fred escalation date: 2026-05-29
+- Seth research needed? yes, for business-model opportunity only
+- Exact Seth research needed: AI workflow setup service positioning, competitors, pricing, and tool/vendor review.
+- Seth research needed by: after Fred accepts opportunity lane
+- Summary: Jeff now has a documented manual-first delegation loop connecting Slack `#command`, Linear, Codex, and repo handoffs.
+- Work completed: Created intake and delegation prompts, playbook, Slack intake log, automation-map entries, task queue entries, and Fred handoff.
+- Files changed: See Fred handoff `docs/handoffs/fred/2026-05-29-jeff-slack-linear-codex-delegation.md`.
+- Decisions made: Ed workflow design routes through Jeff; Codex work remains draft-only; Linear remains execution board; repo docs remain durable memory.
+- Decisions needed from Fred: Whether to pilot this manually, ask Ed for a diagram/runbook refinement, and ask Seth/Sara to prepare the business-facing service track.
+- Decisions needed from CEO/Owner: Only needed before business launch, pricing, public workshop, paid tools, or live integrations.
+- Risks: Duplicate Linear issues already exist for some automation prompts, so Jeff should prefer SIG-21 and SIG-26 as current source items.
+- Tests/checks run: Discoverability search.
+- Tests/checks skipped and why: App tests skipped because this is docs/tracker-only workflow setup.
+- Acceptance criteria: Jeff can run a manual Slack intake sweep and Codex delegation review from repo docs without inventing a new process.
+- Next action: Jeff monitors first manual run and routes Ed workflow refinements through Fred.
+- Next reviewer: Fred
+- Archive when complete? yes

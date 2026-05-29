@@ -1,0 +1,37 @@
+# Handoff: Seth Role Activation
+
+- Handoff ID: SSW-HANDOFF-SETH-2026-05-28-001
+- Date: 2026-05-28
+- From: Seth
+- To: Fred
+- Requested by: CEO/Owner
+- Related task ID: SSW-TASK-0003
+- Related project: SSWApp Codex Team Operating System
+- Priority: High
+- Status: ready_for_fred
+- Deadline status: not_scheduled
+- Due date: not_scheduled
+- Check-in date: 2026-05-28
+- Review due date: 2026-05-28
+- Blocker status: clear
+- Blocking person/role: none
+- CEO action needed? no
+- CEO action needed by: n/a
+- Fred escalation needed? no
+- Fred escalation date: n/a
+- Seth research needed? no
+- Exact Seth research needed: Role instructions were provided in the v3 prompt pack.
+- Seth research needed by: n/a
+- Summary: Seth R&D role instructions were implemented as repo source-of-truth docs.
+- Work completed: Added `SETH.md`, linked Seth startup instructions from bootstrap and roster docs, expanded R&D rules, documented Seth routing, and logged the activation in the task queue and handoff logs.
+- Files changed: `SETH.md`, `CODEX_TEAM_BOOTSTRAP.md`, `docs/codex-team-roster.md`, `docs/research-and-development.md`, `docs/handoffs/seth/README.md`, `docs/task-queue.md`, `docs/chat-handoff-log.md`, `docs/fred-brief.md`, `docs/handoffs/INDEX.md`, `docs/handoffs/seth/2026-05-28-seth-role-activation.md`.
+- Decisions made: Seth role instructions are now represented by `SETH.md`; Seth research still informs Fred and does not approve production work.
+- Decisions needed from Fred: Review and accept Seth activation as part of the operating system.
+- Decisions needed from CEO/Owner: none.
+- Risks: Existing worktree contains many unrelated modified and untracked files; this handoff only covers Seth role documentation.
+- Tests/checks run: Markdown/table structure inspection only.
+- Tests/checks skipped and why: No application tests were run because the change is documentation-only.
+- Acceptance criteria: Seth role instructions are discoverable from the repo, R&D routing and approval boundaries are documented, and the activation has task/handoff visibility.
+- Next action: Fred review.
+- Next reviewer: Fred
+- Archive when complete? yes

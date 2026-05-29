@@ -24,6 +24,7 @@ The hub has real foundations:
 - Google Calendar connector access is available to Codex for bounded, private reads.
 - Linear is the execution board for staff tasks.
 - Slack `#command` is available as an intake lane.
+- The hub is now also an internal proof-of-work example for AI workflow setup services, pending Fred and CEO/Owner approval before any public positioning.
 
 The hub is not fully functional yet because several pages still use seed data, deterministic samples, placeholder UI, or partially wired actions.
 
@@ -205,6 +206,19 @@ Rules:
 - Google Calendar is private schedule context.
 - SSWApp automations produce reviewable records only.
 
+### Phase 6: AI Workflow Service Proof-Of-Work
+
+Goal: Use the internal business hub as a safe example of what Signal Workshop can build for businesses.
+
+Rules:
+
+- The sample workshop and service model stay internal drafts until Fred and the CEO/Owner approve them.
+- Seth researches market, competitor, pricing, and tool/vendor questions before public positioning.
+- Ed drafts workflow maps through Jeff.
+- Sara audits privacy, security, claims, and client-readiness before public use.
+- Alvin implements public pages, forms, or app changes only after Fred approval.
+- No private SSWApp data, raw dashboard rows, raw calendar content, or client-private material appears in demos.
+
 ## Acceptance Criteria For "Whole Site Functional"
 
 The site is not "functional" until:
@@ -231,3 +245,4 @@ The site is not "functional" until:
 - No raw private dashboard or calendar data sent to AI by default.
 - Research stays advisory until Fred approves it.
 - Business-impacting decisions route to the CEO/Owner.
+- AI workflow service offers, sample workshops, pricing, public claims, and paid tools require Fred review and CEO/Owner approval.

@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
+import { requireOwnerResponse } from "@/lib/auth";
 import { generateDailyPack } from "@/lib/openai";
 import { dailyPackInputSchema } from "@/lib/schemas";
 
 export async function POST(request: Request) {
+  const denied = await requireOwnerResponse();
+  if (denied) return denied;
   const json = await request.json().catch(() => null);
   const parsed = dailyPackInputSchema.safeParse(json);
   if (!parsed.success) {

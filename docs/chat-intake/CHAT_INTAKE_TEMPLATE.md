@@ -1,0 +1,21 @@
+# Chat Intake: [Short Title]
+
+- Source:
+- Date captured:
+- Captured by:
+- Project:
+- Related repo:
+- Requested by:
+- Summary:
+- Important decisions:
+- Open questions:
+- Tasks created:
+- Research needed from Seth:
+- Automation/workflow needed from Jeff:
+- Workflow design needed from Ed through Jeff:
+- Audit needed from Sara:
+- Implementation needed from Alvin:
+- CEO ACTION REQUIRED:
+- Deadline status:
+- Blocker status:
+- Next action:
