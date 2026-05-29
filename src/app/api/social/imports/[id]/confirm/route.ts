@@ -9,8 +9,14 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
   const { id } = await context.params;
   const json = await request.json().catch(() => ({}));
   if (isDatabaseConfigured()) {
-    const result = await confirmPersistedSocialImport(id);
-    return NextResponse.json(result);
+    try {
+      const result = await confirmPersistedSocialImport(id);
+      return NextResponse.json(result);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Import could not be confirmed.";
+      const status = message.toLowerCase().includes("not found") ? 404 : 400;
+      return NextResponse.json({ message }, { status });
+    }
   }
   const preview = json.preview as SocialDashboardImportRecord | undefined;
   const result = preview ? confirmImport(preview) : createSampleSocialImport();

@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
-import { getSocialPerformanceData } from "@/lib/db-operational";
+import { requireOwnerResponse } from "@/lib/auth";
+import { getSocialPerformanceData, isDatabaseConfigured } from "@/lib/db-operational";
 import { createSampleSocialImport, getPerformanceContextForPrompt } from "@/lib/social-dashboard-engine";
 
 export async function GET() {
-  const sample = await getSocialPerformanceData().catch(() => createSampleSocialImport());
+  const denied = await requireOwnerResponse();
+  if (denied) return denied;
+  const sample = isDatabaseConfigured() ? await getSocialPerformanceData() : createSampleSocialImport();
   return NextResponse.json({
     context: getPerformanceContextForPrompt({
       metrics: sample.snapshots,

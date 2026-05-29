@@ -10,21 +10,22 @@ export const dynamic = "force-dynamic";
 
 async function getCalendarDraftsSafely() {
   if (!isDatabaseConfigured()) {
-    return { drafts: null, warning: "Database is not configured; showing deterministic sample content drafts." };
+    return { drafts: null, warning: "Database is not configured; showing deterministic sample content drafts.", allowSample: true };
   }
   try {
-    return { drafts: await listCalendarDrafts(), warning: "" };
+    return { drafts: await listCalendarDrafts(), warning: "", allowSample: false };
   } catch {
     return {
-      drafts: null,
-      warning: "Database calendar reads are unavailable in this deployment; showing deterministic sample content drafts.",
+      drafts: [],
+      warning: "Database calendar reads are unavailable in this deployment. Sample drafts are disabled for production data views.",
+      allowSample: false,
     };
   }
 }
 
 export default async function CalendarPage() {
-  const { drafts: dbDrafts, warning: calendarWarning } = await getCalendarDraftsSafely();
-  const pack = dbDrafts ? null : createSampleDailyContentPack();
+  const { drafts: dbDrafts, warning: calendarWarning, allowSample } = await getCalendarDraftsSafely();
+  const pack = allowSample ? createSampleDailyContentPack() : null;
   const drafts =
     dbDrafts?.map((draft) => ({
       id: draft.id,
@@ -129,8 +130,8 @@ export default async function CalendarPage() {
           <p className="text-xs font-semibold uppercase text-stone-500">Content Calendar</p>
           <h2 className="mt-1 text-lg font-semibold text-stone-900">Generated post drafts</h2>
           <p className="mt-2 text-sm leading-6 text-stone-600">
-            DB-backed drafts are shown when the database is configured. Otherwise the table uses deterministic sample data so the
-            workflow stays reviewable during setup.
+            DB-backed drafts are shown when the database is configured. Deterministic sample data is limited to local/no-database
+            setup mode.
           </p>
         </div>
         <div className="overflow-x-auto rounded-lg border border-stone-200 bg-white shadow-sm">
@@ -146,7 +147,7 @@ export default async function CalendarPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-stone-100">
-            {drafts.map((draft) => (
+            {drafts.length ? drafts.map((draft) => (
               <tr key={draft.id}>
                 <td className="px-4 py-3 font-mono text-xs">{draft.date}</td>
                 <td className="px-4 py-3">{draft.brandName}</td>
@@ -155,7 +156,13 @@ export default async function CalendarPage() {
                 <td className="px-4 py-3">{draft.hook}</td>
                 <td className="px-4 py-3">{draft.status}</td>
               </tr>
-            ))}
+            )) : (
+              <tr>
+                <td className="px-4 py-6 text-center text-sm text-stone-500" colSpan={6}>
+                  No persisted post drafts found yet. Run Today will populate this calendar with review-safe drafts.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

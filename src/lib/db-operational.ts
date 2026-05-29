@@ -790,22 +790,42 @@ export async function updatePostStatus(id: string, status: ApprovalStatus, revie
 
 export async function exportReviewMarkdownFromDb(contentPackId?: string) {
   const pack = contentPackId ? await getContentPackById(contentPackId) : await getLatestContentPack();
-  return pack ? exportDailyReviewMarkdown(pack) : exportDailyReviewMarkdown(createSampleDailyContentPack("2026-05-28"));
+  return pack
+    ? exportDailyReviewMarkdown(pack)
+    : [
+        "# SSWApp Review Pack",
+        "",
+        "No persisted content pack was found for the selected filters.",
+        "",
+        "Run Today or select a saved content pack before exporting review markdown.",
+      ].join("\n");
 }
 
 export async function exportSchedulerCsvFromDb(contentPackId?: string) {
   const pack = contentPackId ? await getContentPackById(contentPackId) : await getLatestContentPack();
-  return pack ? exportSchedulerCsv(pack) : exportSchedulerCsv(createSampleDailyContentPack("2026-05-28"));
+  return pack
+    ? exportSchedulerCsv(pack)
+    : ["date", "time", "brand", "platform", "post_copy", "first_comment", "hashtags", "image_filename", "alt_text", "notes"].join(",");
 }
 
 export async function exportImagePromptsFromDb(contentPackId?: string) {
   const pack = contentPackId ? await getContentPackById(contentPackId) : await getLatestContentPack();
-  return pack ? exportImagePromptsJson(pack) : exportImagePromptsJson(createSampleDailyContentPack("2026-05-28"));
+  return pack ? exportImagePromptsJson(pack) : JSON.stringify([], null, 2);
 }
 
 export async function exportAssetManifestFromDb(contentPackId?: string) {
   const pack = contentPackId ? await getContentPackById(contentPackId) : await getLatestContentPack();
-  return pack ? exportAssetManifestJson(pack) : exportAssetManifestJson(createSampleDailyContentPack("2026-05-28"));
+  return pack
+    ? exportAssetManifestJson(pack)
+    : JSON.stringify(
+        {
+          contentPackId: contentPackId || "",
+          date: "",
+          assets: [],
+        },
+        null,
+        2,
+      );
 }
 
 function socialImportMethod(value: string | undefined) {
@@ -1013,6 +1033,26 @@ export async function getSocialImportPreview(id: string): Promise<SocialDashboar
 export async function confirmPersistedSocialImport(id: string) {
   requireDatabase();
   await seedOperationalDatabase();
+  const existingImport = await prisma.socialDashboardImport.findUnique({
+    where: { id },
+    include: { metricSnapshots: true },
+  });
+  const finalImportStatuses: SocialImportStatus[] = [SocialImportStatus.IMPORTED, SocialImportStatus.PARTIALLY_IMPORTED];
+  if (
+    existingImport &&
+    finalImportStatuses.includes(existingImport.status) &&
+    existingImport.metricSnapshots.length > 0
+  ) {
+    return {
+      import: await getSocialImportPreview(id),
+      socialPosts: [],
+      snapshots: [],
+      issues: [],
+      insights: [],
+      rollups: [],
+      alreadyImported: true,
+    };
+  }
   const preview = await getSocialImportPreview(id);
   const result = confirmImport(preview);
   const socialPostIdByLocalId = new Map<string, string>();
@@ -1202,7 +1242,36 @@ export async function getSocialPerformanceData() {
     orderBy: { snapshotDate: "desc" },
     take: 200,
   });
-  if (!snapshots.length) return createSampleSocialImport();
+  if (!snapshots.length) {
+    return {
+      import: {
+        id: "",
+        sourceName: "",
+        platformSlug: "",
+        brandSlug: "",
+        socialAccountId: "",
+        importedBy: "",
+        importMethod: "manual_entry" as const,
+        originalFilename: "",
+        originalFileHash: "",
+        rawColumnHeaders: [],
+        detectedPlatform: "",
+        detectedDateRangeStart: "",
+        detectedDateRangeEnd: "",
+        rowCount: 0,
+        status: "imported" as const,
+        errorSummary: "",
+        mappingTemplateId: "",
+        notes: "No confirmed social metric snapshots are persisted yet.",
+        previewRows: [],
+      },
+      socialPosts: [],
+      snapshots: [],
+      issues: [],
+      insights: [],
+      rollups: [],
+    };
+  }
   const postsById = new Map<string, SocialPostRecord>();
   const metrics: SocialMetricSnapshotRecord[] = snapshots.map((snapshot) => {
     if (snapshot.socialPost) {
@@ -1292,7 +1361,27 @@ export async function getSocialPerformanceData() {
   });
 
   return {
-    import: await getSocialImportPreview(snapshots[0]?.importId || "").catch(() => createSampleSocialImport().import),
+    import: await getSocialImportPreview(snapshots[0]?.importId || "").catch(() => ({
+      id: snapshots[0]?.importId || "",
+      sourceName: "",
+      platformSlug: "",
+      brandSlug: "",
+      socialAccountId: "",
+      importedBy: "",
+      importMethod: "manual_entry" as const,
+      originalFilename: "",
+      originalFileHash: "",
+      rawColumnHeaders: [],
+      detectedPlatform: "",
+      detectedDateRangeStart: "",
+      detectedDateRangeEnd: "",
+      rowCount: snapshots.length,
+      status: "imported" as const,
+      errorSummary: "",
+      mappingTemplateId: "",
+      notes: "Metric snapshots are present, but their source import could not be loaded.",
+      previewRows: [],
+    })),
     socialPosts: [...postsById.values()],
     snapshots: metrics,
     issues: [],
