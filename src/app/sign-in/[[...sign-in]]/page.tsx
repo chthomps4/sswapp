@@ -14,6 +14,15 @@ export default function SignInPage() {
           <p className="mt-2 text-sm leading-6 text-stone-600 lg:max-w-xl">
             The dashboard is private. If sign-in looks blocked in production, check setup status first.
           </p>
+          <div className="mt-4 rounded-md border border-[#b7d8ce] bg-[#eef8f4] p-3 text-sm text-[#17211d]">
+            <p className="font-semibold">First time signing in?</p>
+            <p className="mt-1 leading-5">
+              If Clerk says it cannot find your account, create the owner account first with one of the approved owner emails.
+            </p>
+            <Link href="/sign-up" className="mt-2 inline-flex font-semibold text-[#1e6b4d] hover:underline">
+              Create owner account
+            </Link>
+          </div>
           {!setup.ready ? (
             <div className="mt-4 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-950">
               <p className="font-semibold">Setup needs attention</p>
