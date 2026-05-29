@@ -13,6 +13,7 @@ const LIVE_PREFIXES = {
 export type ClerkRuntimeState = {
   publishableKey: string;
   secretKey: string;
+  domain: string;
   keyMode: ClerkKeyMode;
   hasClerkEnv: boolean;
   isConfigured: boolean;
@@ -47,12 +48,17 @@ export function getClerkRuntimeState(): ClerkRuntimeState {
   const keyMode = inferKeyMode(publishableKey, secretKey);
   const isConfigured = keyMode === "development" || keyMode === "live";
   const isProductionLike = isProductionLikeContext();
+  const domain =
+    process.env.NEXT_PUBLIC_CLERK_DOMAIN ||
+    process.env.CLERK_DOMAIN ||
+    (isProductionLike ? "sitesignal.company" : "");
   const shouldUseClerkAuth = isConfigured && (!isProductionLike || keyMode === "live");
   const shouldProtectPrivatelyInProduction = isProductionLike && keyMode !== "live";
 
   return {
     publishableKey,
     secretKey,
+    domain,
     keyMode,
     hasClerkEnv: Boolean(publishableKey || secretKey),
     isConfigured,

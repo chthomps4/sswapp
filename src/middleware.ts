@@ -13,14 +13,11 @@ const isPublicRoute = createRouteMatcher([
 ]);
 const isApiRoute = createRouteMatcher(["/api(.*)"]);
 
-const clerkProxyOptions = {
-  frontendApiProxy: {
-    enabled: true,
-    path: "/__clerk",
-  },
-};
-
 const clerkState = getClerkRuntimeState();
+
+const clerkMiddlewareOptions = {
+  domain: clerkState.domain || undefined,
+};
 
 async function guardedClerkAuth(request: NextRequest, event: NextFetchEvent) {
   if (!clerkState.shouldUseClerkAuth) {
@@ -40,7 +37,7 @@ async function guardedClerkAuth(request: NextRequest, event: NextFetchEvent) {
         unauthenticatedUrl: new URL("/sign-in", request.url).toString(),
       });
     }
-  }, clerkProxyOptions);
+  }, clerkMiddlewareOptions);
 
   try {
     return await handler(request, event);
