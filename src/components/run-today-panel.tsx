@@ -152,7 +152,7 @@ export function RunTodayPanel() {
           </button>
           <Link href="/packs/run-today" className="inline-flex items-center gap-2 rounded-md border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-800 hover:border-emerald-300">
             <CalendarDays size={16} />
-            View fallback preview
+            View latest pack
           </Link>
         </div>
         {error ? (
