@@ -1,5 +1,6 @@
 import { SignIn } from "@clerk/nextjs";
 import Link from "next/link";
+import { GoogleSignInButton } from "@/components/google-sign-in-button";
 import { getSetupStatus } from "@/lib/setup-status";
 
 export default function SignInPage() {
@@ -26,7 +27,7 @@ export default function SignInPage() {
             </div>
           ) : null}
         </section>
-        <div className="order-1 flex min-h-[360px] justify-center lg:order-2">
+        <div className="order-1 grid gap-3 lg:order-2">
           {!setup.clerkAuthAvailable ? (
             <div className="w-full rounded-lg border border-amber-200 bg-amber-50 p-5 text-amber-950 shadow-sm">
               <p className="font-semibold">Clerk production readiness check required</p>
@@ -38,13 +39,18 @@ export default function SignInPage() {
               </Link>
             </div>
           ) : (
-            <SignIn
-              path="/sign-in"
-              routing="path"
-              signUpUrl="/sign-up"
-              forceRedirectUrl="/auth/complete"
-              fallbackRedirectUrl="/auth/complete"
-            />
+            <>
+              <GoogleSignInButton />
+              <div className="flex min-h-[220px] justify-center">
+                <SignIn
+                  path="/sign-in"
+                  routing="path"
+                  signUpUrl="/sign-up"
+                  forceRedirectUrl="/auth/complete"
+                  fallbackRedirectUrl="/auth/complete"
+                />
+              </div>
+            </>
           )}
         </div>
       </div>
