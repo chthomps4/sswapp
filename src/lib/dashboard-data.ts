@@ -10,6 +10,7 @@ export type DashboardDataSource = "database" | "empty_database" | "deterministic
 export type DashboardConfigStatus = {
   databaseConfigured: boolean;
   clerkConfigured: boolean;
+  clerkProductionReady: boolean;
   ownerEmailsConfigured: boolean;
   openaiConfigured: boolean;
 };
@@ -79,6 +80,7 @@ function emptyDashboardSnapshot(
   if (!config.databaseConfigured) warnings.push("DATABASE_URL is not configured; persistence is unavailable in this environment.");
   if (socialCounts.source !== "database") warnings.push("Social metrics are waiting for confirmed imports.");
   if (!config.clerkConfigured) warnings.push("Clerk is not fully configured; production private access should fail closed before operational use.");
+  if (config.clerkConfigured && !config.clerkProductionReady) warnings.push("Clerk is using development keys. Use live Clerk keys for the production custom domain.");
   if (!config.ownerEmailsConfigured) warnings.push("OWNER_EMAILS is missing; owner-only controls need this before production use.");
   if (!config.openaiConfigured) warnings.push("OpenAI is optional; deterministic fallback remains available when AI is disabled.");
 
@@ -148,9 +150,12 @@ function postsFromPack(pack: GeneratedContentPack) {
 }
 
 function configStatus(): DashboardConfigStatus {
+  const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "";
+  const clerkSecretKey = process.env.CLERK_SECRET_KEY || "";
   return {
     databaseConfigured: isDatabaseConfigured(),
-    clerkConfigured: Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY),
+    clerkConfigured: Boolean(clerkPublishableKey && clerkSecretKey),
+    clerkProductionReady: clerkPublishableKey.startsWith("pk_live_") && clerkSecretKey.startsWith("sk_live_"),
     ownerEmailsConfigured: Boolean(process.env.OWNER_EMAILS),
     openaiConfigured: Boolean(process.env.OPENAI_API_KEY),
   };
@@ -168,6 +173,7 @@ function contentSnapshot(pack: GeneratedContentPack, contentSource: DashboardDat
   if (contentSource !== "database") warnings.push("No persisted content pack is powering this dashboard yet.");
   if (socialCounts.source !== "database") warnings.push("Social metrics are not yet powered by confirmed imports.");
   if (!config.clerkConfigured) warnings.push("Clerk is not fully configured; production private access should fail closed before operational use.");
+  if (config.clerkConfigured && !config.clerkProductionReady) warnings.push("Clerk is using development keys. Use live Clerk keys for the production custom domain.");
   if (!config.ownerEmailsConfigured) warnings.push("OWNER_EMAILS is missing; owner-only controls need this before production use.");
   if (!config.openaiConfigured) warnings.push("OpenAI is optional and currently falls back to deterministic generation.");
 
