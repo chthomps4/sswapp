@@ -69,6 +69,51 @@ function sourceLabel(source: DashboardDataSource) {
   return labels[source];
 }
 
+function emptyDashboardSnapshot(
+  contentSource: DashboardDataSource,
+  socialCounts: Awaited<ReturnType<typeof getSocialCounts>>,
+  reason: string,
+): DashboardSnapshot {
+  const config = configStatus();
+  const warnings: string[] = [reason];
+  if (!config.databaseConfigured) warnings.push("DATABASE_URL is not configured; persistence is unavailable in this environment.");
+  if (socialCounts.source !== "database") warnings.push("Social metrics are waiting for confirmed imports.");
+  if (!config.clerkConfigured) warnings.push("Clerk is not fully configured; production private access should fail closed before operational use.");
+  if (!config.ownerEmailsConfigured) warnings.push("OWNER_EMAILS is missing; owner-only controls need this before production use.");
+  if (!config.openaiConfigured) warnings.push("OpenAI is optional; deterministic fallback remains available when AI is disabled.");
+
+  return {
+    contentSource,
+    contentSourceLabel: sourceLabel(contentSource),
+    socialSource: socialCounts.source,
+    socialSourceLabel: sourceLabel(socialCounts.source),
+    statusMode: "preview_only",
+    latestPackId: "",
+    latestPackTitle: "",
+    latestPackDate: todayIso(),
+    dailyTheme: "",
+    totalDrafts: 0,
+    needsReviewCount: 0,
+    approvedCount: 0,
+    scheduledCount: 0,
+    postedCount: 0,
+    imagePromptCount: 0,
+    pendingApprovalCount: 0,
+    socialImportCount: socialCounts.imports,
+    socialSnapshotCount: socialCounts.snapshots,
+    socialInsightCount: socialCounts.insights,
+    unresolvedImportIssueCount: socialCounts.issues,
+    configStatus: config,
+    warnings,
+    nextActions: [
+      "Run Today to create the first persisted content pack.",
+      "Import and confirm social dashboard CSVs to activate metrics.",
+      "Review approvals before exporting scheduler CSVs.",
+      "Use Calendar for the operating cadence while Google Calendar sync stays read-only.",
+    ],
+  };
+}
+
 export function postDraftToDashboardPost(draft: PostDraftRecord, imagePrompt?: ImagePromptRecord): PostVariant {
   return {
     id: draft.id,
@@ -212,19 +257,25 @@ export async function getOperationalDashboardData(): Promise<DashboardData> {
   try {
     const pack = await getLatestContentPack();
     if (!pack) {
-      return createDashboardDataFromPack(createSampleDailyContentPack(), {
-        contentSource: "empty_database",
-        socialCounts,
-      });
+      return {
+        brands: seedBrands,
+        posts: [],
+        snapshot: emptyDashboardSnapshot("empty_database", socialCounts, "Database is connected, but no content pack has been created yet."),
+      };
     }
     return createDashboardDataFromPack(pack, {
       contentSource: "database",
       socialCounts,
     });
   } catch {
-    return createDashboardDataFromPack(createSampleDailyContentPack(), {
-      contentSource: "error_fallback",
-      socialCounts: { ...socialCounts, source: socialCounts.source === "database" ? "error_fallback" : socialCounts.source },
-    });
+    return {
+      brands: seedBrands,
+      posts: [],
+      snapshot: emptyDashboardSnapshot(
+        "error_fallback",
+        { ...socialCounts, source: socialCounts.source === "database" ? "error_fallback" : socialCounts.source },
+        "Database reads failed for the dashboard. Check migrations, Prisma client generation, and production database access.",
+      ),
+    };
   }
 }

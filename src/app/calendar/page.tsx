@@ -1,8 +1,6 @@
 import { ContentPageShell } from "@/components/content-page-shell";
 import { createSampleDailyContentPack } from "@/lib/automation-engine";
 import {
-  businessHubRouteAudit,
-  getBusinessHubRouteAuditSummary,
   getOwnerActionItems,
   getUpcomingBusinessHubEvents,
 } from "@/lib/business-hub-operating-plan";
@@ -38,7 +36,6 @@ export default async function CalendarPage() {
       status: draft.status.toLowerCase(),
     })) || pack?.postDrafts || [];
   const businessEvents = getUpcomingBusinessHubEvents();
-  const routeAuditSummary = getBusinessHubRouteAuditSummary();
   const ownerActionItems = getOwnerActionItems();
 
   return (
@@ -104,48 +101,26 @@ export default async function CalendarPage() {
       <section className="mt-5 rounded-lg border border-stone-200 bg-white p-5 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase text-stone-500">Dead Page Rescue</p>
-            <h2 className="mt-1 text-lg font-semibold text-stone-900">Route audit queue</h2>
+            <p className="text-xs font-semibold uppercase text-stone-500">Calendar Integration Status</p>
+            <h2 className="mt-1 text-lg font-semibold text-stone-900">Private calendar lane</h2>
             <p className="mt-2 text-sm leading-6 text-stone-600">
-              These are the pages Fred/Sara/Alvin need to move from sample-heavy or placeholder behavior into real operating
-              workflows.
+              Google Calendar context is intentionally read-only for v1. The dashboard can show operating events and generated
+              content drafts now; calendar write-back waits for explicit Fred and CEO approval.
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-5">
-            {Object.entries(routeAuditSummary).map(([status, count]) => (
-              <div key={status} className="rounded-md bg-stone-50 px-3 py-2 text-center">
-                <div className="font-semibold text-stone-900">{count}</div>
-                <div className="mt-1 text-stone-500">{status}</div>
-              </div>
-            ))}
-          </div>
+          <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-900">operational read-only</span>
         </div>
-
-        <div className="mt-4 overflow-x-auto">
-          <table className="w-full min-w-[980px] text-left text-sm">
-            <thead className="bg-stone-50 text-xs uppercase text-stone-500">
-              <tr>
-                <th className="px-4 py-3">Route</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Priority</th>
-                <th className="px-4 py-3">Owner</th>
-                <th className="px-4 py-3">Problem</th>
-                <th className="px-4 py-3">Next Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-stone-100">
-              {businessHubRouteAudit.map((item) => (
-                <tr key={item.route}>
-                  <td className="px-4 py-3 font-mono text-xs">{item.route}</td>
-                  <td className="px-4 py-3">{item.status}</td>
-                  <td className="px-4 py-3 font-semibold">{item.priority}</td>
-                  <td className="px-4 py-3">{item.owner}</td>
-                  <td className="px-4 py-3">{item.problem}</td>
-                  <td className="px-4 py-3">{item.nextAction}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          {[
+            ["Current source", dbDrafts ? "Database drafts" : "Fallback drafts"],
+            ["Write-back", "Disabled"],
+            ["Next step", "Confirm calendar scopes before sync"],
+          ].map(([label, value]) => (
+            <div key={label} className="rounded-md border border-stone-200 bg-stone-50 p-3">
+              <p className="text-xs font-semibold uppercase text-stone-500">{label}</p>
+              <p className="mt-1 text-sm font-medium text-stone-900">{value}</p>
+            </div>
+          ))}
         </div>
       </section>
 

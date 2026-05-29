@@ -15,8 +15,12 @@ type RunTodayResponse = {
   promptRenders: Array<{ promptKey: string; promptVersion: string }>;
 };
 
+function localDateInputValue() {
+  return new Date().toLocaleDateString("en-CA");
+}
+
 export function RunTodayPanel() {
-  const [date, setDate] = useState("2026-05-28");
+  const [date, setDate] = useState(localDateInputValue);
   const [strategicPriority, setStrategicPriority] = useState("Create useful daily visibility without creating another full-time operations burden.");
   const [dailyTheme, setDailyTheme] = useState("");
   const [businessNotes, setBusinessNotes] = useState("");
@@ -26,6 +30,7 @@ export function RunTodayPanel() {
   const [includePerformanceContext, setIncludePerformanceContext] = useState(true);
   const [includeShortVideoIdeas, setIncludeShortVideoIdeas] = useState(true);
   const [result, setResult] = useState<RunTodayResponse | null>(null);
+  const [error, setError] = useState("");
   const [isRunning, setIsRunning] = useState(false);
 
   function toggle(list: string[], value: string, setter: (values: string[]) => void) {
@@ -34,27 +39,37 @@ export function RunTodayPanel() {
 
   async function runToday() {
     setIsRunning(true);
-    const response = await fetch("/api/automations/run-today", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        date,
-        strategicPriority,
-        dailyTheme,
-        selectedBrands,
-        selectedPlatforms,
-        businessNotes,
-        includeImagePrompts: true,
-        includeCarouselOutlines: true,
-        includeGoogleBusinessProfile: selectedPlatforms.includes("google-business-profile"),
-        includeReddit,
-        includeShortVideoIdeas,
-        includePerformanceContext,
-      }),
-    });
-    const data = (await response.json()) as RunTodayResponse;
-    setResult(data);
-    setIsRunning(false);
+    setError("");
+    setResult(null);
+    try {
+      const response = await fetch("/api/automations/run-today", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          date,
+          strategicPriority,
+          dailyTheme,
+          selectedBrands,
+          selectedPlatforms,
+          businessNotes,
+          includeImagePrompts: true,
+          includeCarouselOutlines: true,
+          includeGoogleBusinessProfile: selectedPlatforms.includes("google-business-profile"),
+          includeReddit,
+          includeShortVideoIdeas,
+          includePerformanceContext,
+        }),
+      });
+      const data = (await response.json().catch(() => null)) as (RunTodayResponse & { message?: string }) | null;
+      if (!response.ok || !data?.packUrl) {
+        setError(data?.message || "Run Today failed. Check your login, database connection, and deployment logs.");
+        return;
+      }
+      setResult(data);
+      window.location.assign(data.packUrl);
+    } finally {
+      setIsRunning(false);
+    }
   }
 
   return (
@@ -137,9 +152,12 @@ export function RunTodayPanel() {
           </button>
           <Link href="/packs/run-today" className="inline-flex items-center gap-2 rounded-md border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-800 hover:border-emerald-300">
             <CalendarDays size={16} />
-            View sample pack
+            View fallback preview
           </Link>
         </div>
+        {error ? (
+          <p className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-900">{error}</p>
+        ) : null}
       </div>
 
       <aside className="space-y-4">
