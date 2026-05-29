@@ -211,9 +211,10 @@ export function getBusinessHubRouteAuditSummary() {
 
 export function getOwnerActionItems() {
   return [
-    "Confirm which Google calendars should feed the hub. Fred recommends primary calendar read-only for v1.",
-    "Confirm Slack #command as intake-only or source-of-truth. Fred recommends intake-only with Linear/repo as durable record.",
-    "List any private project folders outside SiteSignalCo and Signal workshop business hub that must be included.",
-    "Choose the first functional priority after calendar: dashboard, Run Today, approvals, metrics/imports, exports, or brand admin.",
+    "Dashboard is the current priority: stabilize Clerk login on sitesignal.company before expanding deeper app workflows.",
+    "Owner accounts confirmed for v1: chthomps84@gmail.com and chad@lswdesigns.studio.",
+    "Slack #command is intake-only; Linear is execution; repo docs remain the durable source of truth.",
+    "Google calendars remain read-only for v1; no Cal.com layer is approved.",
+    "No additional private project folders are in scope yet beyond SiteSignalCo and Signal workshop business hub.",
   ];
 }

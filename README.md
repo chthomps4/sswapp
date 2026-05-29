@@ -44,6 +44,10 @@ DIRECT_URL=
 NEXT_PUBLIC_APP_URL=
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/
+NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/
 OWNER_EMAILS=
 OPENAI_API_KEY=
 OPENAI_MODEL=
@@ -105,7 +109,8 @@ Raw imports are private and are not sent to AI providers. AI metric summaries an
 - `/api/automations/run-today` persists `ContentPack`, `PostDraft`, `ImagePrompt`, `Approval`, and `AutomationRun` records when the database is configured.
 - `/packs/[id]`, `/calendar`, `/approvals`, social imports, social performance, and export routes read persisted records first and fall back to sample data only when the database is not configured.
 - Scheduler exports are approved-only. Generated content starts as `needs_review`; approval records start as `pending`.
-- Clerk protects private pages and APIs when Clerk env vars are configured. `/api/health`, `/sign-in`, and `/sign-up` remain public.
+- Clerk protects private pages and APIs when Clerk env vars are configured. `/api/health`, `/sign-in`, `/sign-up`, and Clerk's `/__clerk` frontend API route remain public enough for the sign-in flow to complete.
+- Production owner access should include `OWNER_EMAILS=chthomps84@gmail.com,chad@lswdesigns.studio` unless the CEO/Owner changes the authorized account list.
 
 ## Automation Prompt Library
 

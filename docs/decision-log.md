@@ -1,0 +1,8 @@
+# Decision Log
+
+Use this log for architecture, deployment, auth/session, billing/payment, database, workflow, domain/routing, automation, R&D, tool/vendor, merge, and release decisions.
+
+| Decision ID | Date | Requested By | Decided By | Requires CEO/Owner Approval | Deadline | Context | Options Considered | Decision | Reason | Impact | Follow-Up Tasks |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| SSW-DECISION-0001 | 2026-05-28 | CEO/Owner | CEO/Owner with Codex discovery | no | n/a | SiteSignal domain-tier automation prompt referenced `sswapp`, but repo inspection showed SaaS implementation belongs in `chthomps4/sitesignal`. | Target `sswapp`; target `sitesignal`; compare both first. | Target `chthomps4/sitesignal` for domain-tier SaaS architecture. | It already contains SaaS routes, Clerk, Prisma, PayPal, pricing, dashboard, Studio, and entitlements. | Prevents implementing public SaaS domain routing in the internal SSWApp operations repo. | Wait for Seth research prompts before Jeff automation handoff. |
+| SSW-DECISION-0002 | 2026-05-29 | CEO/Owner | Fred | no | 2026-05-29 | Production dashboard login on `sitesignal.company` loops or fails to load after sign-in. | Rebuild auth; switch auth provider; patch Clerk custom route config first. | Patch Clerk custom route/env guidance and middleware first. | Production health is good, signed-out protection works, and the likely failure point is Clerk custom route/callback handling rather than the app dashboard code. | Keeps the private dashboard stack intact while reducing login-loop risk. | Verify owner login for `chthomps84@gmail.com` and `chad@lswdesigns.studio`, then resume dashboard mobile/calendar work. |
