@@ -13,8 +13,8 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       proxyUrl="/__clerk"
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
-      signInFallbackRedirectUrl="/"
-      signUpFallbackRedirectUrl="/"
+      signInFallbackRedirectUrl="/auth/complete"
+      signUpFallbackRedirectUrl="/auth/complete"
     >
       {children}
     </ClerkProvider>

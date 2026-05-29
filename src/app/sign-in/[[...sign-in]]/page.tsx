@@ -38,7 +38,13 @@ export default function SignInPage() {
               </Link>
             </div>
           ) : (
-            <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" fallbackRedirectUrl="/" />
+            <SignIn
+              path="/sign-in"
+              routing="path"
+              signUpUrl="/sign-up"
+              forceRedirectUrl="/auth/complete"
+              fallbackRedirectUrl="/auth/complete"
+            />
           )}
         </div>
       </div>

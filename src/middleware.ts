@@ -2,7 +2,14 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 import { getClerkRuntimeState } from "./lib/clerk-runtime";
 
-const isPublicRoute = createRouteMatcher(["/api/health(.*)", "/setup-status(.*)", "/sign-in(.*)", "/sign-up(.*)", "/__clerk(.*)"]);
+const isPublicRoute = createRouteMatcher([
+  "/api/health(.*)",
+  "/setup-status(.*)",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/auth/complete(.*)",
+  "/__clerk(.*)",
+]);
 const isApiRoute = createRouteMatcher(["/api(.*)"]);
 
 const clerkProxyOptions = {
