@@ -149,3 +149,4 @@ Social dashboard import notes are in [docs/social-dashboard-data-processing.md](
 Automation prompt notes are in [docs/automation-prompt-library.md](docs/automation-prompt-library.md).
 Automation workflow notes are in [docs/automation-workflows.md](docs/automation-workflows.md).
 Codex automation setup prompts are in [docs/codex-automation-setup-prompts.md](docs/codex-automation-setup-prompts.md).
+Social media chat memory reload prompts are in [docs/social-media-chat-memory-reload-prompt-pack.md](docs/social-media-chat-memory-reload-prompt-pack.md).
