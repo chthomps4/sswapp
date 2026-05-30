@@ -13,8 +13,10 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       domain={clerk.domain || undefined}
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
-      signInFallbackRedirectUrl="/auth/complete"
-      signUpFallbackRedirectUrl="/auth/complete"
+      signInForceRedirectUrl="/"
+      signUpForceRedirectUrl="/"
+      signInFallbackRedirectUrl="/"
+      signUpFallbackRedirectUrl="/"
     >
       {children}
     </ClerkProvider>
