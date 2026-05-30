@@ -1,5 +1,6 @@
 import { getClerkRuntimeState } from "./clerk-runtime";
 import { isDatabaseConfigured } from "./db-operational";
+import { getFacebookRuntimeState } from "./facebook-runtime";
 
 export type SetupStatusItem = {
   key: string;
@@ -20,6 +21,7 @@ export function getSetupStatus() {
   const openaiConfigured = Boolean(process.env.OPENAI_API_KEY);
   const autoApprovalDisabled = process.env.ENABLE_AUTO_APPROVAL !== "true";
   const autoPublishingDisabled = process.env.ENABLE_AUTO_PUBLISHING !== "true";
+  const facebook = getFacebookRuntimeState();
 
   const items: SetupStatusItem[] = [
     {
@@ -64,9 +66,31 @@ export function getSetupStatus() {
       value: autoPublishingDisabled ? "disabled" : "enabled",
       action: "Keep ENABLE_AUTO_PUBLISHING false or unset.",
     },
+    {
+      key: "facebook-sdk",
+      label: "Facebook SDK",
+      ok: !facebook.sdkEnabled || facebook.sdkConfigured,
+      value: facebook.sdkConfigured ? "configured" : facebook.sdkEnabled ? "missing config" : "disabled",
+      action:
+        "Optional. Set NEXT_PUBLIC_FACEBOOK_SDK_ENABLED, NEXT_PUBLIC_FACEBOOK_APP_ID, and NEXT_PUBLIC_FACEBOOK_API_VERSION for Facebook Login checks.",
+    },
+    {
+      key: "facebook-publishing",
+      label: "Facebook publishing",
+      ok: !facebook.publishingEnabled || facebook.publishingConfigured,
+      value: facebook.publishingConfigured
+        ? "configured"
+        : facebook.publishingEnabled
+          ? "missing server config"
+          : "disabled",
+      action:
+        "Optional. Keep disabled until Page permissions are approved; use server-only FACEBOOK_PAGE_ID and FACEBOOK_PAGE_ACCESS_TOKEN when ready.",
+    },
   ];
 
-  const blockers = items.filter((item) => !item.ok && item.key !== "openai");
+  const blockers = items.filter(
+    (item) => !item.ok && !["openai", "facebook-sdk", "facebook-publishing"].includes(item.key),
+  );
   return {
     ready: blockers.length === 0,
     clerkAuthAvailable,

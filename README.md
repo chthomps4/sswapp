@@ -103,6 +103,12 @@ SSWApp now includes the planned v1 data processing path for social dashboard exp
 
 Raw imports are private and are not sent to AI providers. AI metric summaries and direct social API imports remain disabled by default with `ENABLE_AI_METRIC_ANALYSIS=false` and `ENABLE_SOCIAL_API_IMPORTS=false`.
 
+## Facebook Dev Integration
+
+The app includes a private `/facebook-dev` page for verifying the Facebook JavaScript SDK and Facebook Login status. This is a safe development foundation only: it strips login tokens from browser events, does not store tokens, and does not publish to Facebook.
+
+Facebook publishing remains disabled by default. Any future posting flow must stay server-side, owner-only, approval-gated, and manual by default.
+
 ## Operational Readiness
 
 - `/api/health` reports boolean status for database, Clerk, OpenAI, and feature flags without exposing secrets.
@@ -149,3 +155,4 @@ Social dashboard import notes are in [docs/social-dashboard-data-processing.md](
 Automation prompt notes are in [docs/automation-prompt-library.md](docs/automation-prompt-library.md).
 Automation workflow notes are in [docs/automation-workflows.md](docs/automation-workflows.md).
 Codex automation setup prompts are in [docs/codex-automation-setup-prompts.md](docs/codex-automation-setup-prompts.md).
+Facebook dev integration notes are in [docs/facebook-dev-integration.md](docs/facebook-dev-integration.md).

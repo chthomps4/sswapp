@@ -8,6 +8,7 @@ const navLinks = [
   { href: "/social/imports", label: "Imports" },
   { href: "/metrics", label: "Metrics" },
   { href: "/prompts", label: "Prompts" },
+  { href: "/facebook-dev", label: "Facebook" },
 ];
 
 export function ContentPageShell({
