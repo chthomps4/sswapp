@@ -14,10 +14,10 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       allowedRedirectOrigins={clerk.allowedRedirectOrigins}
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
-      signInForceRedirectUrl="/"
-      signUpForceRedirectUrl="/"
-      signInFallbackRedirectUrl="/"
-      signUpFallbackRedirectUrl="/"
+      signInForceRedirectUrl="/auth/complete"
+      signUpForceRedirectUrl="/auth/complete"
+      signInFallbackRedirectUrl="/auth/complete"
+      signUpFallbackRedirectUrl="/auth/complete"
     >
       {children}
     </ClerkProvider>

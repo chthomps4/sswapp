@@ -2,24 +2,38 @@
 
 import { useAuth } from "@clerk/nextjs";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export function AuthCompleteClient() {
   const { isLoaded, userId } = useAuth();
-  const router = useRouter();
+  const [showManualContinue, setShowManualContinue] = useState(false);
 
   useEffect(() => {
-    if (!isLoaded) return;
+    const timeout = window.setTimeout(() => setShowManualContinue(true), 8000);
+    return () => window.clearTimeout(timeout);
+  }, []);
 
-    if (userId) router.replace("/");
-  }, [isLoaded, router, userId]);
+  useEffect(() => {
+    if (!isLoaded || !userId) return;
+    window.location.replace("/");
+  }, [isLoaded, userId]);
 
   return (
     <div className="mt-4 space-y-3 text-sm text-stone-600">
       <p className="text-xs font-medium uppercase tracking-wide text-stone-500">
         {isLoaded ? "Session check complete" : "Loading secure session"}
       </p>
+      {showManualContinue && userId ? (
+        <div className="rounded-md border border-[#b7d8ce] bg-[#eef8f4] p-3 text-left text-[#17211d]">
+          <p className="font-semibold">You are signed in.</p>
+          <p className="mt-1 leading-5">
+            If the dashboard does not open automatically, continue manually.
+          </p>
+          <a href="/" className="mt-3 inline-flex rounded-md bg-[#1e6b4d] px-3 py-2 text-xs font-medium text-white">
+            Open dashboard
+          </a>
+        </div>
+      ) : null}
       {isLoaded && !userId ? (
         <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-left text-amber-950">
           <p className="font-semibold">No signed-in session was found yet.</p>
