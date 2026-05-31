@@ -23,7 +23,7 @@ test("owner access only allows configured owner emails", () => {
   process.env.OWNER_EMAILS = "chthomps84@gmail.com, chad@lswdesigns.studio";
 
   try {
-    assert.equal(isOwnerEmail("CHTHOMPS84@gmail.com"), true);
+    assert.equal(isOwnerEmail(" CHTHOMPS84@gmail.com "), true);
     assert.equal(isOwnerEmail("chad@lswdesigns.studio"), true);
     assert.equal(isOwnerEmail("not-owner@example.com"), false);
   } finally {

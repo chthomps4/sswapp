@@ -54,6 +54,8 @@ export default function SignInPage() {
                 signUpUrl="/sign-up"
                 forceRedirectUrl="/"
                 fallbackRedirectUrl="/"
+                oauthFlow="redirect"
+                transferable={false}
               />
             </div>
           )}

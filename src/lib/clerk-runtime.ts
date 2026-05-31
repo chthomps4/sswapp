@@ -14,6 +14,7 @@ export type ClerkRuntimeState = {
   publishableKey: string;
   secretKey: string;
   domain: string;
+  allowedRedirectOrigins: string[];
   keyMode: ClerkKeyMode;
   hasClerkEnv: boolean;
   isConfigured: boolean;
@@ -42,16 +43,33 @@ function inferKeyMode(publishable: string, secret: string): ClerkKeyMode {
   return "invalid";
 }
 
+function uniqueValues(values: string[]) {
+  return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
+}
+
+function getAllowedRedirectOrigins() {
+  const explicitOrigins = (process.env.CLERK_ALLOWED_REDIRECT_ORIGINS || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+  const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "";
+
+  return uniqueValues([
+    "https://sitesignal.company",
+    "https://www.sitesignal.company",
+    "https://sswapp.vercel.app",
+    vercelUrl,
+    ...explicitOrigins,
+  ]);
+}
+
 export function getClerkRuntimeState(): ClerkRuntimeState {
   const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "";
   const secretKey = process.env.CLERK_SECRET_KEY || "";
   const keyMode = inferKeyMode(publishableKey, secretKey);
   const isConfigured = keyMode === "development" || keyMode === "live";
   const isProductionLike = isProductionLikeContext();
-  const domain =
-    process.env.NEXT_PUBLIC_CLERK_DOMAIN ||
-    process.env.CLERK_DOMAIN ||
-    (isProductionLike ? "sitesignal.company" : "");
+  const domain = process.env.NEXT_PUBLIC_CLERK_DOMAIN || process.env.CLERK_DOMAIN || "";
   const shouldUseClerkAuth = isConfigured && (!isProductionLike || keyMode === "live");
   const shouldProtectPrivatelyInProduction = isProductionLike && keyMode !== "live";
 
@@ -59,6 +77,7 @@ export function getClerkRuntimeState(): ClerkRuntimeState {
     publishableKey,
     secretKey,
     domain,
+    allowedRedirectOrigins: getAllowedRedirectOrigins(),
     keyMode,
     hasClerkEnv: Boolean(publishableKey || secretKey),
     isConfigured,

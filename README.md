@@ -48,6 +48,7 @@ NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/
 NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/
+CLERK_ALLOWED_REDIRECT_ORIGINS=https://sitesignal.company,https://www.sitesignal.company,https://sswapp.vercel.app
 OWNER_EMAILS=
 OPENAI_API_KEY=
 OPENAI_MODEL=
@@ -64,6 +65,8 @@ SOCIAL_IMPORT_MAX_BYTES=5242880
 ```
 
 For Neon + Prisma, use the pooled connection for `DATABASE_URL` and the direct connection for `DIRECT_URL`.
+
+For Clerk, keep `NEXT_PUBLIC_CLERK_DOMAIN` and `CLERK_DOMAIN` unset unless you are intentionally configuring a Clerk proxy or satellite app. The verified custom domain should be driven by Clerk's production instance and live publishable key. If owner login succeeds but owner-only API actions return `403`, add the signed-in email address to `OWNER_EMAILS` and redeploy.
 
 ## Core Workflow
 

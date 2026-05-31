@@ -50,10 +50,28 @@ test("Clerk runtime allows auth for production live keys", () => {
     assert.equal(state.shouldUseClerkAuth, true);
     assert.equal(state.shouldProtectPrivatelyInProduction, false);
     assert.equal(state.isConfigured, true);
+    assert.equal(state.domain, "");
+    assert.ok(state.allowedRedirectOrigins.includes("https://sitesignal.company"));
+    assert.ok(state.allowedRedirectOrigins.includes("https://www.sitesignal.company"));
   }, {
     VERCEL_ENV: "production",
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_live_123",
     CLERK_SECRET_KEY: "sk_live_123",
+    NEXT_PUBLIC_CLERK_DOMAIN: undefined,
+    CLERK_DOMAIN: undefined,
+  });
+});
+
+test("Clerk runtime uses explicit domain only when configured", () => {
+  withEnv(() => {
+    const state = getClerkRuntimeState();
+
+    assert.equal(state.domain, "auth.example.com");
+  }, {
+    VERCEL_ENV: "production",
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_live_123",
+    CLERK_SECRET_KEY: "sk_live_123",
+    NEXT_PUBLIC_CLERK_DOMAIN: "auth.example.com",
   });
 });
 

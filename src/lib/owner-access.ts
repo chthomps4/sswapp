@@ -9,5 +9,5 @@ export function isOwnerEmail(email: string | null | undefined) {
   if (!email) return false;
   const owners = getOwnerEmails();
   if (!owners.length) return false;
-  return owners.includes(email.toLowerCase());
+  return owners.includes(email.trim().toLowerCase());
 }

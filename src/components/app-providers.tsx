@@ -11,6 +11,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider
       domain={clerk.domain || undefined}
+      allowedRedirectOrigins={clerk.allowedRedirectOrigins}
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
       signInForceRedirectUrl="/"

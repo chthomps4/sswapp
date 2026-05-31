@@ -47,6 +47,7 @@ export default function SignUpPage() {
             signInUrl="/sign-in"
             forceRedirectUrl="/"
             fallbackRedirectUrl="/"
+            oauthFlow="redirect"
           />
         </div>
       </div>
