@@ -16,9 +16,9 @@ const clerkState = getClerkRuntimeState();
 
 const clerkMiddlewareOptions = {
   domain: clerkState.domain || undefined,
-  frontendApiProxy: {
-    enabled: true,
-  },
+  authorizedParties: clerkState.allowedRedirectOrigins,
+  signInUrl: "/sign-in",
+  signUpUrl: "/sign-up",
 };
 
 async function guardedClerkAuth(request: NextRequest, event: NextFetchEvent) {
