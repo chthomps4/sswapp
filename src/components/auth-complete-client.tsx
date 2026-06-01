@@ -9,7 +9,7 @@ export function AuthCompleteClient() {
   const [showManualContinue, setShowManualContinue] = useState(false);
 
   useEffect(() => {
-    const timeout = window.setTimeout(() => setShowManualContinue(true), 8000);
+    const timeout = window.setTimeout(() => setShowManualContinue(true), 5000);
     return () => window.clearTimeout(timeout);
   }, []);
 
@@ -29,9 +29,9 @@ export function AuthCompleteClient() {
           <p className="mt-1 leading-5">
             If the dashboard does not open automatically, continue manually.
           </p>
-          <a href="/" className="mt-3 inline-flex rounded-md bg-[#1e6b4d] px-3 py-2 text-xs font-medium text-white">
+          <Link href="/" className="mt-3 inline-flex rounded-md bg-[#1e6b4d] px-3 py-2 text-xs font-medium text-white">
             Open dashboard
-          </a>
+          </Link>
         </div>
       ) : null}
       {isLoaded && !userId ? (

@@ -20,11 +20,12 @@ test("owner access fails closed when OWNER_EMAILS is missing", () => {
 
 test("owner access only allows configured owner emails", () => {
   const original = process.env.OWNER_EMAILS;
-  process.env.OWNER_EMAILS = "chthomps84@gmail.com, chad@lswdesigns.studio";
+  process.env.OWNER_EMAILS = "chthomps84@gmail.com, chad@lswdesigns.studio, chad@lswdesigns.info";
 
   try {
     assert.equal(isOwnerEmail(" CHTHOMPS84@gmail.com "), true);
     assert.equal(isOwnerEmail("chad@lswdesigns.studio"), true);
+    assert.equal(isOwnerEmail("chad@lswdesigns.info"), true);
     assert.equal(isOwnerEmail("not-owner@example.com"), false);
   } finally {
     if (original === undefined) {

@@ -30,6 +30,7 @@ function resolveAuthorizedParties(request: NextRequest, baseOrigins: string[]) {
 
 function shouldRedirectToCanonicalHost(request: NextRequest, canonicalHost: string) {
   if (!canonicalHost) return false;
+  if (process.env.ENABLE_CANONICAL_HOST_REDIRECT !== "true") return false;
 
   const environment = process.env.VERCEL_ENV || process.env.NODE_ENV || "";
   if (environment && environment !== "production") return false;
@@ -40,6 +41,7 @@ function shouldRedirectToCanonicalHost(request: NextRequest, canonicalHost: stri
 
   const isLocal = hostname === "localhost" || hostname === "127.0.0.1";
   if (isLocal) return false;
+  if (hostname.endsWith(".vercel.app")) return false;
 
   return hostname !== canonicalHost;
 }
@@ -56,18 +58,16 @@ async function guardedClerkAuth(request: NextRequest, event: NextFetchEvent) {
   const clerkState = getClerkRuntimeState();
   const hasClerkHandshake = request.nextUrl.searchParams.has("__clerk_handshake");
   const pathname = request.nextUrl.pathname.toLowerCase();
+  const canonicalHost = clerkState.canonicalHost || getCanonicalHostFromEnv();
   const isClerkCallbackPath = hasClerkHandshake && pathname !== "/sign-in" && pathname !== "/sign-up";
-  const isAuthRoute =
-    pathname.startsWith("/__clerk") ||
-    pathname.startsWith("/sign-in") ||
-    pathname.startsWith("/sign-up") ||
-    pathname.startsWith("/auth/complete") ||
-    isClerkCallbackPath;
+  const isCallbackOrCompletePath =
+    isClerkCallbackPath || pathname.startsWith("/auth/complete") || pathname.startsWith("/__clerk");
+  const isClerkSignInPage = pathname.startsWith("/sign-in") || pathname.startsWith("/sign-up");
+  const shouldForceCanonical =
+    shouldRedirectToCanonicalHost(request, canonicalHost) &&
+    (isCallbackOrCompletePath || isClerkSignInPage);
 
-  const canSkipCanonicalRedirect =
-    isAuthRoute;
-
-  if (!canSkipCanonicalRedirect && shouldRedirectToCanonicalHost(request, clerkState.canonicalHost)) {
+  if (shouldForceCanonical) {
     const response = redirectToCanonical(request);
     if (response) return response;
   }

@@ -51,18 +51,33 @@ test("Clerk runtime allows auth for production live keys", () => {
     assert.equal(state.shouldProtectPrivatelyInProduction, false);
     assert.equal(state.isConfigured, true);
     assert.equal(state.domain, "");
-    assert.ok(state.allowedRedirectOrigins.includes("https://sitesignal.company"));
-    assert.ok(state.allowedRedirectOrigins.includes("https://www.sitesignal.company"));
+    assert.ok(state.allowedRedirectOrigins.includes("https://app.test.local"));
+    assert.ok(state.allowedRedirectOrigins.includes("http://localhost:3000"));
   }, {
     VERCEL_ENV: "production",
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_live_123",
     CLERK_SECRET_KEY: "sk_live_123",
     NEXT_PUBLIC_CLERK_DOMAIN: undefined,
     CLERK_DOMAIN: undefined,
+    NEXT_PUBLIC_APP_URL: "https://app.test.local",
   });
 });
 
-test("Clerk runtime uses explicit domain only when configured", () => {
+test("Clerk runtime ignores custom Clerk domain unless explicitly enabled", () => {
+  withEnv(() => {
+    const state = getClerkRuntimeState();
+
+    assert.equal(state.domain, "");
+  }, {
+    VERCEL_ENV: "production",
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_live_123",
+    CLERK_SECRET_KEY: "sk_live_123",
+    NEXT_PUBLIC_CLERK_DOMAIN: "auth.example.com",
+    NEXT_PUBLIC_CLERK_CUSTOM_DOMAIN_ENABLED: undefined,
+  });
+});
+
+test("Clerk runtime uses explicit domain only when custom domain mode is enabled", () => {
   withEnv(() => {
     const state = getClerkRuntimeState();
 
@@ -72,6 +87,24 @@ test("Clerk runtime uses explicit domain only when configured", () => {
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_live_123",
     CLERK_SECRET_KEY: "sk_live_123",
     NEXT_PUBLIC_CLERK_DOMAIN: "auth.example.com",
+    NEXT_PUBLIC_CLERK_CUSTOM_DOMAIN_ENABLED: "true",
+  });
+});
+
+test("Clerk runtime keeps explicit redirect origins even when not canonical by default", () => {
+  withEnv(() => {
+    const state = getClerkRuntimeState();
+
+    assert.ok(state.allowedRedirectOrigins.includes("https://www.app.test.local"));
+    assert.ok(state.allowedRedirectOrigins.includes("https://legacy.app.test.local"));
+    assert.ok(state.allowedRedirectOrigins.includes("https://another-preview.vercel.app"));
+  }, {
+    VERCEL_ENV: "production",
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_live_123",
+    CLERK_SECRET_KEY: "sk_live_123",
+    NEXT_PUBLIC_CANONICAL_HOST: "app.test.local",
+    CLERK_ALLOWED_REDIRECT_ORIGINS:
+      "https://www.app.test.local,https://legacy.app.test.local,https://another-preview.vercel.app",
   });
 });
 

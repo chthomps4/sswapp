@@ -46,9 +46,10 @@ NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
 NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/
-NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/
-CLERK_ALLOWED_REDIRECT_ORIGINS=https://sitesignal.company,https://www.sitesignal.company,https://sswapp.vercel.app
+NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/auth/complete
+NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/auth/complete
+NEXT_PUBLIC_CLERK_CUSTOM_DOMAIN_ENABLED=false
+CLERK_ALLOWED_REDIRECT_ORIGINS=https://sswapp.vercel.app
 OWNER_EMAILS=
 OPENAI_API_KEY=
 OPENAI_MODEL=
@@ -66,7 +67,10 @@ SOCIAL_IMPORT_MAX_BYTES=5242880
 
 For Neon + Prisma, use the pooled connection for `DATABASE_URL` and the direct connection for `DIRECT_URL`.
 
-For Clerk, keep `NEXT_PUBLIC_CLERK_DOMAIN` and `CLERK_DOMAIN` unset unless you are intentionally configuring a Clerk proxy or satellite app. The verified custom domain should be driven by Clerk's production instance and live publishable key. If owner login succeeds but owner-only API actions return `403`, add the signed-in email address to `OWNER_EMAILS` and redeploy.
+For Clerk, keep `NEXT_PUBLIC_CLERK_DOMAIN` and `CLERK_DOMAIN` unset unless you are intentionally configuring a Clerk proxy or satellite app. Custom Clerk domains are ignored unless `NEXT_PUBLIC_CLERK_CUSTOM_DOMAIN_ENABLED=true`, so the dashboard can run on `sswapp.vercel.app` without a `.company` dependency.
+If owner login succeeds but owner-only API actions return `403`, add the signed-in email address to `OWNER_EMAILS` and redeploy.
+
+If you want a Windows desktop shell later, we can wrap the existing app in a lightweight Tauri container without changing the authentication or business logic.
 
 ## Core Workflow
 
@@ -119,7 +123,7 @@ Facebook publishing remains disabled by default. Any future posting flow must st
 - `/packs/[id]`, `/calendar`, `/approvals`, social imports, social performance, and export routes read persisted records first and fall back to sample data only when the database is not configured.
 - Scheduler exports are approved-only. Generated content starts as `needs_review`; approval records start as `pending`.
 - Clerk protects private pages and APIs when Clerk env vars are configured. `/api/health`, `/sign-in`, `/sign-up`, and Clerk's `/__clerk` frontend API route remain public enough for the sign-in flow to complete.
-- Production owner access should include `OWNER_EMAILS=chthomps84@gmail.com,chad@lswdesigns.studio` unless the CEO/Owner changes the authorized account list.
+- Production owner access should include `OWNER_EMAILS=chthomps84@gmail.com,chad@lswdesigns.studio,chad@lswdesigns.info` unless the CEO/Owner changes the authorized account list.
 
 ## Automation Prompt Library
 

@@ -77,7 +77,7 @@ function IconButton({
   href?: string;
 }) {
   const classes =
-    "inline-flex size-8 items-center justify-center rounded-md border border-stone-200 bg-white text-stone-700 transition hover:border-emerald-300 hover:text-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-400";
+    "inline-flex size-10 items-center justify-center rounded-md border border-stone-200 bg-white text-stone-700 transition hover:border-emerald-300 hover:text-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-400 touch-manipulation";
   if (href) {
     return (
       <a className={classes} href={href} target="_blank" rel="noreferrer" title={label} aria-label={label}>
@@ -93,6 +93,7 @@ function IconButton({
 }
 
 export function SswDashboard({ brands, posts, dashboard }: DashboardProps) {
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [activeBrand, setActiveBrand] = useState(brands[0]?.slug || "signal-workshop");
   const [drafts, setDrafts] = useState<PostVariant[]>(posts);
   const [theme, setTheme] = useState("Signal over noise");
@@ -192,9 +193,27 @@ export function SswDashboard({ brands, posts, dashboard }: DashboardProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f7f4] text-[#17211d]">
+    <div className="relative min-h-screen bg-[#f5f7f4] text-[#17211d]">
       <div className="grid min-h-screen lg:grid-cols-[248px_1fr]">
-        <aside className="border-r border-stone-200 bg-[#15211b] px-4 py-5 text-stone-100">
+        {mobileNavOpen ? (
+          <button
+            type="button"
+            className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+            onClick={() => setMobileNavOpen(false)}
+            aria-label="Close navigation"
+          />
+        ) : null}
+        <aside className={`border-r border-stone-200 bg-[#15211b] px-4 py-5 text-stone-100 lg:static lg:block lg:w-auto lg:translate-x-0 ${mobileNavOpen ? "fixed inset-x-0 top-0 z-40 h-screen overflow-y-auto" : "hidden"} lg:min-h-screen`}>
+          <div className="mb-4 flex items-center justify-between lg:hidden">
+            <p className="text-sm font-semibold">Navigation</p>
+            <button
+              type="button"
+              onClick={() => setMobileNavOpen(false)}
+              className="rounded-md border border-white/20 px-2 py-1 text-xs font-medium text-white"
+            >
+              Close
+            </button>
+          </div>
           <div className="flex items-center gap-3">
             <div
               className="flex size-11 items-center justify-center rounded-lg bg-white p-1.5 shadow-sm"
@@ -260,6 +279,13 @@ export function SswDashboard({ brands, posts, dashboard }: DashboardProps) {
 
         <main className="min-w-0 px-4 py-5 sm:px-6 lg:px-8">
           <header className="flex flex-col gap-4 border-b border-stone-200 pb-5 xl:flex-row xl:items-center xl:justify-between">
+            <button
+              type="button"
+              onClick={() => setMobileNavOpen(true)}
+              className="inline-flex w-full items-center justify-center rounded-md border border-stone-300 bg-white px-3 py-2 text-sm font-medium text-stone-800 lg:hidden"
+            >
+              Open menu
+            </button>
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
               <div
                 className="flex h-24 w-full max-w-[280px] items-center justify-center rounded-lg border border-stone-200 bg-white p-3 shadow-sm"
