@@ -1,4 +1,4 @@
-import { getClerkRuntimeState } from "./clerk-runtime";
+import { getDashboardAuthStatus } from "./dashboard-auth";
 import { isDatabaseConfigured } from "./db-operational";
 import { getFacebookRuntimeState } from "./facebook-runtime";
 
@@ -11,11 +11,13 @@ export type SetupStatusItem = {
 };
 
 export function getSetupStatus() {
-  const clerk = getClerkRuntimeState();
-  const clerkKeyMode = clerk.keyMode;
-  const clerkAuthAvailable = clerk.shouldUseClerkAuth;
-  const clerkConfigured = clerk.isConfigured;
-  const clerkProductionReady = clerkKeyMode === "live";
+  const dashboardAuth = getDashboardAuthStatus();
+  const clerkKeyMode = "removed";
+  const clerkAuthDisabled = true;
+  const clerkAuthMode = "removed";
+  const clerkAuthAvailable = false;
+  const clerkConfigured = false;
+  const clerkProductionReady = false;
   const ownerEmailsConfigured = Boolean(process.env.OWNER_EMAILS);
   const databaseConfigured = isDatabaseConfigured();
   const openaiConfigured = Boolean(process.env.OPENAI_API_KEY);
@@ -32,11 +34,11 @@ export function getSetupStatus() {
       action: "Set DATABASE_URL and DIRECT_URL in Vercel.",
     },
     {
-      key: "clerk",
-      label: "Clerk production keys",
-      ok: clerkProductionReady,
-      value: clerkKeyMode,
-      action: "Replace Vercel Clerk env vars with pk_live... and sk_live..., then redeploy.",
+      key: "dashboard-auth",
+      label: "Dashboard auth",
+      ok: dashboardAuth.disabled,
+      value: dashboardAuth.mode,
+      action: dashboardAuth.message,
     },
     {
       key: "owner-emails",
@@ -89,11 +91,15 @@ export function getSetupStatus() {
   ];
 
   const blockers = items.filter(
-    (item) => !item.ok && !["openai", "facebook-sdk", "facebook-publishing"].includes(item.key),
+    (item) => !item.ok && !["owner-emails", "openai", "facebook-sdk", "facebook-publishing"].includes(item.key),
   );
   return {
     ready: blockers.length === 0,
+    dashboardAuthMode: dashboardAuth.mode,
+    dashboardAuthDisabled: dashboardAuth.disabled,
+    clerkAuthDisabled,
     clerkAuthAvailable,
+    clerkAuthMode,
     clerkConfigured,
     clerkKeyMode,
     clerkProductionReady,

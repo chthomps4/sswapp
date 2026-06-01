@@ -10,7 +10,7 @@ SSWApp helps prepare platform-native content packs, review posts before publishi
 - React + TypeScript
 - Tailwind CSS
 - Prisma schema for Neon Postgres
-- Clerk-ready owner access
+- Temporary open dashboard access while owner auth is rebuilt
 - OpenAI Responses API generation with deterministic fallback
 - Node test runner via `tsx`
 
@@ -34,7 +34,7 @@ npx.cmd prisma migrate deploy
 npm.cmd run seed
 ```
 
-The app stays build-safe without database env vars, but operational production should set `DATABASE_URL`, `DIRECT_URL`, Clerk keys, and `OWNER_EMAILS`.
+The app stays build-safe without database env vars, but operational production should set `DATABASE_URL`, `DIRECT_URL`, and the private owner-auth provider once it is rebuilt.
 
 ## Environment Variables
 
@@ -42,14 +42,6 @@ The app stays build-safe without database env vars, but operational production s
 DATABASE_URL=
 DIRECT_URL=
 NEXT_PUBLIC_APP_URL=
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-CLERK_SECRET_KEY=
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/auth/complete
-NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/auth/complete
-NEXT_PUBLIC_CLERK_CUSTOM_DOMAIN_ENABLED=false
-CLERK_ALLOWED_REDIRECT_ORIGINS=https://sswapp.vercel.app
 OWNER_EMAILS=
 OPENAI_API_KEY=
 OPENAI_MODEL=
@@ -67,8 +59,7 @@ SOCIAL_IMPORT_MAX_BYTES=5242880
 
 For Neon + Prisma, use the pooled connection for `DATABASE_URL` and the direct connection for `DIRECT_URL`.
 
-For Clerk, keep `NEXT_PUBLIC_CLERK_DOMAIN` and `CLERK_DOMAIN` unset unless you are intentionally configuring a Clerk proxy or satellite app. Custom Clerk domains are ignored unless `NEXT_PUBLIC_CLERK_CUSTOM_DOMAIN_ENABLED=true`, so the dashboard can run on `sswapp.vercel.app` without a `.company` dependency.
-If owner login succeeds but owner-only API actions return `403`, add the signed-in email address to `OWNER_EMAILS` and redeploy.
+Dashboard auth is temporarily removed so the Vercel app URL can be used for recovery testing. This opens private routes and must be replaced with owner auth before private production use.
 
 If you want a Windows desktop shell later, we can wrap the existing app in a lightweight Tauri container without changing the authentication or business logic.
 
@@ -118,11 +109,11 @@ Facebook publishing remains disabled by default. Any future posting flow must st
 
 ## Operational Readiness
 
-- `/api/health` reports boolean status for database, Clerk, OpenAI, and feature flags without exposing secrets.
+- `/api/health` reports boolean status for database, dashboard auth mode, OpenAI, and feature flags without exposing secrets.
 - `/api/automations/run-today` persists `ContentPack`, `PostDraft`, `ImagePrompt`, `Approval`, and `AutomationRun` records when the database is configured.
 - `/packs/[id]`, `/calendar`, `/approvals`, social imports, social performance, and export routes read persisted records first and fall back to sample data only when the database is not configured.
 - Scheduler exports are approved-only. Generated content starts as `needs_review`; approval records start as `pending`.
-- Clerk protects private pages and APIs when Clerk env vars are configured. `/api/health`, `/sign-in`, `/sign-up`, and Clerk's `/__clerk` frontend API route remain public enough for the sign-in flow to complete.
+- Dashboard auth is temporarily removed and `/api/health` reports `dashboardAuthMode: "open_testing"` plus Clerk compatibility booleans set to removed/disabled. Restore owner auth before private production use.
 - Production owner access should include `OWNER_EMAILS=chthomps84@gmail.com,chad@lswdesigns.studio,chad@lswdesigns.info` unless the CEO/Owner changes the authorized account list.
 
 ## Automation Prompt Library

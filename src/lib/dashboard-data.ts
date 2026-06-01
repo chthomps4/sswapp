@@ -1,6 +1,6 @@
 import { createSampleDailyContentPack } from "./automation-engine";
+import { getDashboardAuthStatus } from "./dashboard-auth";
 import { getLatestContentPack, isDatabaseConfigured } from "./db-operational";
-import { getClerkRuntimeState } from "./clerk-runtime";
 import { prisma } from "./prisma";
 import { seedBrands } from "./seed-data";
 import type { Brand, GeneratedContentPack, ImagePromptRecord, MetricSnapshot, PostDraftRecord, PostVariant } from "./types";
@@ -10,6 +10,8 @@ export type DashboardDataSource = "database" | "empty_database" | "deterministic
 
 export type DashboardConfigStatus = {
   databaseConfigured: boolean;
+  dashboardAuthMode: "open_testing";
+  dashboardAuthDisabled: boolean;
   clerkConfigured: boolean;
   clerkProductionReady: boolean;
   ownerEmailsConfigured: boolean;
@@ -80,8 +82,9 @@ function emptyDashboardSnapshot(
   const warnings: string[] = [reason];
   if (!config.databaseConfigured) warnings.push("DATABASE_URL is not configured; persistence is unavailable in this environment.");
   if (socialCounts.source !== "database") warnings.push("Social metrics are waiting for confirmed imports.");
-  if (!config.clerkConfigured) warnings.push("Clerk is not fully configured; production private access should fail closed before operational use.");
-  if (config.clerkConfigured && !config.clerkProductionReady) warnings.push("Clerk is using development keys. Use live Clerk keys for the production custom domain.");
+  if (config.dashboardAuthDisabled) {
+    warnings.push("Dashboard auth is temporarily removed for Vercel app testing. Restore owner auth before private production use.");
+  }
   if (!config.ownerEmailsConfigured) warnings.push("OWNER_EMAILS is missing; owner-only controls need this before production use.");
   if (!config.openaiConfigured) warnings.push("OpenAI is optional; deterministic fallback remains available when AI is disabled.");
 
@@ -151,11 +154,13 @@ function postsFromPack(pack: GeneratedContentPack) {
 }
 
 function configStatus(): DashboardConfigStatus {
-  const clerk = getClerkRuntimeState();
+  const dashboardAuth = getDashboardAuthStatus();
   return {
     databaseConfigured: isDatabaseConfigured(),
-    clerkConfigured: clerk.isConfigured,
-    clerkProductionReady: clerk.keyMode === "live",
+    dashboardAuthMode: dashboardAuth.mode,
+    dashboardAuthDisabled: dashboardAuth.disabled,
+    clerkConfigured: false,
+    clerkProductionReady: false,
     ownerEmailsConfigured: Boolean(process.env.OWNER_EMAILS),
     openaiConfigured: Boolean(process.env.OPENAI_API_KEY),
   };
@@ -172,8 +177,9 @@ function contentSnapshot(pack: GeneratedContentPack, contentSource: DashboardDat
   if (!config.databaseConfigured) warnings.push("DATABASE_URL is not configured; content and metrics are deterministic fallback data.");
   if (contentSource !== "database") warnings.push("No persisted content pack is powering this dashboard yet.");
   if (socialCounts.source !== "database") warnings.push("Social metrics are not yet powered by confirmed imports.");
-  if (!config.clerkConfigured) warnings.push("Clerk is not fully configured; production private access should fail closed before operational use.");
-  if (config.clerkConfigured && !config.clerkProductionReady) warnings.push("Clerk is using development keys. Use live Clerk keys for the production custom domain.");
+  if (config.dashboardAuthDisabled) {
+    warnings.push("Dashboard auth is temporarily removed for Vercel app testing. Restore owner auth before private production use.");
+  }
   if (!config.ownerEmailsConfigured) warnings.push("OWNER_EMAILS is missing; owner-only controls need this before production use.");
   if (!config.openaiConfigured) warnings.push("OpenAI is optional and currently falls back to deterministic generation.");
 

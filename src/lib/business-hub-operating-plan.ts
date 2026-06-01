@@ -211,7 +211,7 @@ export function getBusinessHubRouteAuditSummary() {
 
 export function getOwnerActionItems() {
   return [
-    "Dashboard is the current priority: stabilize Clerk login on sitesignal.company before expanding deeper app workflows.",
+    "Dashboard is the current priority: use sswapp.vercel.app in temporary open testing mode while owner auth is rebuilt.",
     "Owner accounts confirmed for v1: chthomps84@gmail.com and chad@lswdesigns.studio.",
     "Slack #command is intake-only; Linear is execution; repo docs remain the durable source of truth.",
     "Google calendars remain read-only for v1; no Cal.com layer is approved.",
